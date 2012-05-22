@@ -78,6 +78,8 @@ public class DatabaseConnection
 		return null;
 	}
 	
+
+
 	public boolean addResults(SimulationResult results)
 	{
 		try
@@ -103,110 +105,8 @@ public class DatabaseConnection
 			e.printStackTrace();
 			return false;
 		}
+		
+		
+		
 	}
-	
-	
-	public ArrayList<SimulationRequest> getSimulationRequests(String status)
-	{
-		ArrayList<SimulationRequest> requests = new ArrayList<SimulationRequest>();
-		
-		try
-		{
-			PreparedStatement statement = connection.prepareStatement("select simulator_queue_object.queue_id," +
-					" simulator_queue_object.simulation_id," +
-					"sim_descriptions_id, sim_parts_queue_id, crawler_queue_id from simulator_queue_object,crawler_dependency, simulator_dependency" +
-					"where queue_status=? and crawler_dependency.sim_queue_id = queue_id and simulations_dependency.sim_queue_id = queue_id");
-			statement.setString(1, status);
-			
-			ResultSet set = statement.executeQuery();
-			
-			while(set.next())
-			{
-				int queue_id = set.getInt(1);
-				int simulation_id = set.getInt(2);
-				int simulation_descriptions_id = set.getInt(3);
-				int simulation_dependency = set.getInt(4);
-				int crawler_dependency = set.getInt(5);
-				
-				SimulationRequest request = new SimulationRequest(queue_id,simulation_id,simulation_dependency,crawler_dependency,simulation_descriptions_id);
-				requests.add(request);
-			}
-		}
-		catch(SQLException ex)
-		{
-			
-		}
-		
-		return requests;
-	}
-	
-	public ArrayList<SimulationRequest> getSimulationRequests(String status,int simulatorID)
-	{
-		ArrayList<SimulationRequest> requests = new ArrayList<SimulationRequest>();
-		
-		try
-		{
-			PreparedStatement statement = connection.prepareStatement("select simulator_queue_object.queue_id," +
-					" simulator_queue_object.simulation_id," +
-					"sim_descriptions_id, sim_parts_queue_id, crawler_queue_id from simulator_queue_object,crawler_dependency, simulator_dependency" +
-					"where queue_status=? and simulator_id=? and crawler_dependency.sim_queue_id = queue_id and simulations_dependency.sim_queue_id = queue_id");
-			statement.setString(1, status);
-			statement.setInt(2, simulatorID);
-			
-			ResultSet set = statement.executeQuery();
-			
-			while(set.next())
-			{
-				int queue_id = set.getInt(1);
-				int simulation_id = set.getInt(2);
-				int simulation_descriptions_id = set.getInt(3);
-				int simulation_dependency = set.getInt(4);
-				int crawler_dependency = set.getInt(5);
-				
-				SimulationRequest request = new SimulationRequest(queue_id,simulation_id,simulation_dependency,crawler_dependency,simulation_descriptions_id);
-				requests.add(request);
-			}
-		}
-		catch(SQLException ex)
-		{
-			
-		}
-		
-		return requests;
-	}
-	
-	public ArrayList<CrawlerRequest> getCrawlerRequests(String status)
-	{
-		ArrayList<CrawlerRequest> requests = new ArrayList<CrawlerRequest>();
-		
-		try
-		{
-			PreparedStatement statement = connection.prepareStatement("select queue_id, queue_type, latitude, longitude, timeframe from crawler_queue_object where queue_status=?");
-			statement.setString(1,status);
-			
-			ResultSet set = statement.executeQuery();
-			
-			while(set.next())
-			{
-				//get data..
-				//first alter column timeframe from bigint to date in phpPhAdmin
-			}
-			
-		}catch(SQLException ex)
-		{
-			
-		}
-		
-		return requests;
-	}
-
-	/*public SimulationDescription getSimulationDescription(int simulationDescriptionID)
-	{
-		try {
-			PreparedStatement statement = connection.prepareStatement("select id, object_id, impact_id, timeIntervall, minimumTime,maximumTime ");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
 }
