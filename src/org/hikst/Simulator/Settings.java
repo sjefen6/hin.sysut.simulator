@@ -105,11 +105,17 @@ public class Settings {
 	 * The setter will only be used by the AliveMessenger after the first reporting.
 	 */
 	public static int getSimulatorID(){
-		return Integer.parseInt(configFile.getProperty("simulator_id"));
+		int result;
+		try {
+			result = Integer.parseInt(configFile.getProperty("SIMULATOR_ID"));
+		} catch (NumberFormatException ex) {
+            return -1;
+        }
+		return result;
 	}
 	
 	public static void setSimulatorID(int id){
-		configFile.setProperty("simulator_id", Integer.toString(id));
+		configFile.setProperty("SIMULATOR_ID", Integer.toString(id));
 		try {
 			configFile.store(new FileWriter(file),null);
 		} catch (IOException e) {
