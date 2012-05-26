@@ -86,7 +86,7 @@ public class Settings {
 			if (!dbc.isClosed()){
 				return true;
 			}
-		} catch (SQLException e1) {
+		} catch (Exception e) {
 			// This is not unexpected and will always fail before the dbc is created.
 			//Please just continue!
 		}

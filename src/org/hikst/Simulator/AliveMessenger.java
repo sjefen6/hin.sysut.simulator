@@ -1,22 +1,46 @@
 package org.hikst.Simulator;
 
+/*
+ * AliveMessenger
+ * Reports to the database every minute that it is alive and running.
+ * Make sure settings are correctly set up before using.
+ * Make sure this class gets loaded by the main tread.
+ * The use of timer seem to take care of the rest.
+ * 
+ * Example:
+ * public static void main(String[] args) {
+ * 	new Settings();
+ * 	AliveMessenger.getInstance();
+ * }
+ */
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.swing.AbstractAction;
 import javax.swing.Timer;
 
 public class AliveMessenger extends AbstractAction {
+	private static AliveMessenger _instance = new AliveMessenger();
+	private final int INTERVAL = 60000;
 
-	public AliveMessenger() {
-		new Timer(2000, (ActionListener) this).start();
+	private AliveMessenger() {
+		new Timer(INTERVAL, (ActionListener) this).start();
 	}
+	
+    public static AliveMessenger getInstance() {
+        return _instance;
+    }
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		System.out.println(getIp());
+		update();
 	}
 
 	private String getIp() {
@@ -31,17 +55,44 @@ public class AliveMessenger extends AbstractAction {
 		return null;
 	}
 
-	private void update(String ip){
+	private void update(){
 		String query = "";
 		if (Settings.getSimulatorID() == -1){
 			// Insert
-			query = "";
-			// Will also need to
-//			Settings.setSimulatorID(id);
+			query = "INSERT INTO simulator(" +
+					"status_id, " + 
+					"ip_adress, " +
+					"last_seen_ts, " +
+					"url) " +
+					"VALUES(?,?,extract(epoch from now()),NULL) RETURNING *";
+			try {
+				PreparedStatement statement = Settings.getDBC().prepareStatement(query);
+				statement.setInt(1, 1);
+				statement.setString(2, getIp());
+				ResultSet res = statement.executeQuery();
+				res.next();
+				Settings.setSimulatorID(res.getInt("id"));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}else {
-			query = "UPDATE ";
+			query = "UPDATE simulator SET " +
+					"status_id = ?, " +
+					"ip_adress = ?, " +
+					"last_seen_ts = extract(epoch from now()), " +
+					"url = NULL " + 
+					"WHERE id = ?";
+			try {
+				PreparedStatement statement = Settings.getDBC().prepareStatement(query);
+				statement.setInt(1, 1);
+				statement.setString(2, getIp());
+				statement.setInt(3, Settings.getSimulatorID());
+				statement.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-//		Settings.getDBC()
 	}
 }
