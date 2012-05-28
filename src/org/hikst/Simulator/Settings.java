@@ -11,8 +11,8 @@ import java.util.Properties;
 import java.util.Scanner;
 
 public class Settings {
-	private Properties configFile;
-	private File file;
+	private static Properties configFile;
+	private static File file;
 	private static String db_hostname, db_port, db_db, db_user, db_pw;
 	private static Connection dbc;
 	
@@ -86,7 +86,7 @@ public class Settings {
 			if (!dbc.isClosed()){
 				return true;
 			}
-		} catch (SQLException e1) {
+		} catch (Exception e) {
 			// This is not unexpected and will always fail before the dbc is created.
 			//Please just continue!
 		}
@@ -104,12 +104,18 @@ public class Settings {
 	 * SimulatorID is the ID given to the simulator instance by the database
 	 * The setter will only be used by the AliveMessenger after the first reporting.
 	 */
-	public int getSimulatorID(){
-		return Integer.parseInt(configFile.getProperty("simulator_id"));
+	public static int getSimulatorID(){
+		int result;
+		try {
+			result = Integer.parseInt(configFile.getProperty("SIMULATOR_ID"));
+		} catch (NumberFormatException ex) {
+            return -1;
+        }
+		return result;
 	}
 	
-	public void setSimulatorID(int id){
-		configFile.setProperty("simulator_id", Integer.toString(id));
+	public static void setSimulatorID(int id){
+		configFile.setProperty("SIMULATOR_ID", Integer.toString(id));
 		try {
 			configFile.store(new FileWriter(file),null);
 		} catch (IOException e) {
