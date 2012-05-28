@@ -1,38 +1,104 @@
 package org.hikst.Simulator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class SimulationRequest 
 {
+	public static final String Request_Pending = "Pending";
+	public static final String Request_Finished = "Finished";
+	public static final String Request_Processing = "Processing";
+	
 	private int ID;
-	private int simID;
-	private int simulatorDependencyID;
-	private int crawlerDependencyID;
 	private int simulationDescriptionsID;
 	
 	public int getID() {
 		return ID;
 	}
-	public int getSimID() {
-		return simID;
-	}
-
 	
-	public int getSimulatorDependencyID() {
-		return simulatorDependencyID;
-	}
-	public int getCrawlerDependencyID() {
-		return crawlerDependencyID;
-	}
 	public int getSimulationDescriptionsID() {
 		return simulationDescriptionsID;
 	}
-	public SimulationRequest(int iD, int simID, int simulatorDependencyID,
-			int crawlerDependencyID, int simulationDescriptionsID) {
-		super();
-		ID = iD;
-		this.simID = simID;
-		this.simulatorDependencyID = simulatorDependencyID;
-		this.crawlerDependencyID = crawlerDependencyID;
-		this.simulationDescriptionsID = simulationDescriptionsID;
+	
+	public SimulationRequest(int id,int simulator_id) throws ObjectNotFoundException
+	{
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "SELECT ID,Simulations_Descriptions_ID FROM " +
+					"Simulator_Queue_Objects WHERE ID=? AND Simulator_ID=?; ";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
+			statement.setInt(2, simulator_id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				this.ID = set.getInt(1);
+				this.simulationDescriptionsID = set.getInt(2);
+			}
+			else
+			{
+				throw new ObjectNotFoundException();
+			}
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	public void setStatusToProcessing()
+	{
+		try
+		{
+			Connection connection = Settings.getDBC();
+			
+			int statusID = Status.getInstance().getStatusID(Request_Processing);
+			
+			String query = "UPDATE TABLE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
+			
+			PreparedStatement statement =  connection.prepareStatement(query);
+			statement.setInt(1, statusID);
+			statement.setInt(2, ID);
+			statement.executeUpdate();
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		catch(StatusIdNotFoundException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	public void setStatusToFinished()
+	{
+		try
+		{
+			Connection connection = Settings.getDBC();
+			
+			int statusID = Status.getInstance().getStatusID(Request_Finished);
+			
+			String query = "UPDATE TABLE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
+			
+			PreparedStatement statement =  connection.prepareStatement(query);
+			statement.setInt(1, statusID);
+			statement.setInt(2, ID);
+			statement.executeUpdate();
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		catch(StatusIdNotFoundException ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	
 }
