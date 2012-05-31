@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+
+import javax.swing.text.DateFormatter;
 
 public class Simulation implements Runnable
 {
@@ -25,31 +28,38 @@ public class Simulation implements Runnable
 		}
 		catch(ObjectNotFoundException ex)
 		{
-			//print out error message
+			System.out.println("No simulation description with the id \""+request.getSimulationDescriptionsID()+"\" was found");
+			ex.printStackTrace();
 		}
 	}
 	
 	public void run()
 	{
-		
-		
 		boolean readyToSimulate = false;
 		
 		while(!readyToSimulate)
 		{
+			System.out.println("Request \""+this.request.getID()+"\": Sets simulation request to \"processing\"");
 			this.request.setStatusToProcessing();
 			
 			//are we ready to simulate?
+			System.out.println("Request \""+this.request.getID()+"\": Checking dependencies");
 			if(checkCrawlerDependencies() && checkSimulationDependencies())
 			{
+				System.out.println("Request \""+this.request.getID()+"\": The dependencies are finished");
+				System.out.println("Request \""+this.request.getID()+"\": Can now start simulation...");
 				readyToSimulate = true;
 			}
 			else
 			{
+				System.out.println("Request \""+this.request.getID()+"\": The dependencies are not finished");
+				System.out.println("Request \""+this.request.getID()+"\": Simulation has to wait a bit");
+				System.out.println("Request \""+this.request.getID()+"\": Sleep for one second...");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
+					System.out.println("Request \""+this.request.getID()+"\": Unable to sleep");
 					e.printStackTrace();
 				}
 			}
@@ -68,17 +78,28 @@ public class Simulation implements Runnable
 			
 			if(simulatorObject.hasSons())
 			{	
+				System.out.println("Request \""+this.request.getID()+"\": is dependent of one or more simulation(s)");
+				
+				System.out.println("Request\""+this.request.getID()+"\": Begins Simulations..");
+				
+				System.out.println("Request\""+this.request.getID()+"\": Simulation object: "+simulatorObject);
 				while(time.before(endTime))
 				{
 				//get the from the finished simulation from the sons and multiply them together
-				
+					
 					long longTime = time.getTime();
 					long newTime = longTime + intervall;
 					time = new Date(newTime);
 				}
+				
+				System.out.println("Request\""+this.request.getID()+"\": Simulations finished");
 			}
 			else
 			{	
+				System.out.println("Request\""+this.request.getID()+"\": Is not dependent of one or more simulation(s)");
+				
+				System.out.println("Request\""+this.request.getID()+"\": Begins Simulation..");
+				
 				while(time.before(endTime))
 				{
 					float effect = simulatorObject.getEffect();
@@ -87,6 +108,9 @@ public class Simulation implements Runnable
 				
 					float power_consumption = effect;
 					
+					System.out.println("Request\""+this.request.getID()+"\": Time = \""+time.toGMTString()+" Power = \""+effect+" W\" Current = \""+current+" A\" Voltage = \""+voltage+" V\" Power Consumption = \""+power_consumption+"\"");
+					
+					System.out.println("Request\""+this.request.getID()+"\": uploads result to database");
 					this.saveResults(startTime, effect, power_consumption, voltage, current, simulation_descriptions_id);
 					//simulate here and do something something here
 					//calculate number of simulations
@@ -100,6 +124,7 @@ public class Simulation implements Runnable
 					time = new Date(newTime);
 				}
 				
+				System.out.println("Request\""+this.request.getID()+"\": Simulations finished");
 				this.request.setStatusToFinished();
 			}
 	
@@ -193,8 +218,10 @@ public class Simulation implements Runnable
 		}
 		catch(SQLException ex)
 		{
+			System.out.println("Request\""+this.request.getID()+"\": Unable to check simulation dependencies");
 			ex.printStackTrace();
 		} catch (StatusIdNotFoundException e) {
+			System.out.println("Request\""+this.request.getID()+"\": No status id to the status \""+SimulationRequest.Request_Finished+"\" was found");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -219,57 +246,8 @@ public class Simulation implements Runnable
 			statement.executeUpdate();	
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Request\""+this.request.getID()+"\": Unable to save result");
 			e.printStackTrace();
 		}
-	}
-	
-	/*boolean finished;
-	SimulationDescription runningSimulationDescription;
-	SimulationResult result;
-	public boolean isFinished() {
-		return finished;
-	}
-
-	public SimulationResult getResults()
-	{
-		return result;
-	}
-	
-	public void start(SimulationDescription description)
-	{
-		this.runningSimulationDescription = description;
-		Thread simulationThread = new Thread(this);
-		simulationThread.start();
-	}
-
-	@Override
-	public void run() {
-		
-		float timeStart = runningSimulationDescription.getTimeStart();
-		float timeEnd = runningSimulationDescription.getTimeEnd();
-		float timeInterval = runningSimulationDescription.getInterval();
-		
-		int numberOfSimulations = (int)((timeEnd - timeStart)/timeInterval);
-		
-		float[] simulations = new float[numberOfSimulations];
-		
-		for(int i = 0; i<numberOfSimulations; i++)
-		{
-			float t = timeStart +timeInterval*i;
-			simulations[i] = simulate(t);
-		}
-		
-		SimulatorObject simulatorObject = runningSimulationDescription.getSimulatorObject();
-		
-		result = new SimulationResult(runningSimulationDescription,simulations);
-		finished = true;	
-	}
-	
-	private float simulate(float time)
-	{
-		return runningSimulationDescription.getSimulatorObject().getEffect();
-	}
-	*/
-	
-	
+	}	
 }

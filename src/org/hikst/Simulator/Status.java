@@ -29,7 +29,7 @@ public class Status
 		
 		try
 		{
-			String query = "";
+			String query = "SELECT ID, Name FROM Status";
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet set = statement.executeQuery();
 		

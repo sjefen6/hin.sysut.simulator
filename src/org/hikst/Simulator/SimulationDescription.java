@@ -56,10 +56,10 @@ public class SimulationDescription
 
 		try
 		{
-			String query = "SELECT ID, Object_ID, timeIntervall, minimumTime, maximumTime FROM Simulation_Description WHERE ID=?";
+			String query = "SELECT ID, Object_ID, timeIntervall, minimumTime, maximumTime FROM Simulation_Descriptions WHERE ID=?";
 			
 			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setInt(0, id);
+			statement.setInt(1, id);
 			ResultSet set = statement.executeQuery();
 			
 			if(set.next())
@@ -90,7 +90,7 @@ public class SimulationDescription
 		}
 		catch(SQLException ex)
 		{
-			throw new ObjectNotFoundException();
+			ex.printStackTrace();
 		}
 	}
 	
