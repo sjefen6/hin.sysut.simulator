@@ -31,18 +31,24 @@ public class AliveMessenger extends AbstractAction {
 	private final int INTERVAL = 60000;
 
 	private AliveMessenger() {
+		// Make sure update is run once before the timer starts
+		update();
+		// Start updating status on an INTERVAL
 		new Timer(INTERVAL, (ActionListener) this).start();
 	}
 	
+	// Returning the singleton
     public static AliveMessenger getInstance() {
         return _instance;
     }
 
+    // Overriding for timer
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		update();
 	}
 
+	// Returns the current external ip determend by a 3rd party.
 	private String getIp() {
 		try {
 			URL url = new URL("http://ip.goldclone.no/");
