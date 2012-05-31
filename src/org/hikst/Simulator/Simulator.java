@@ -1,10 +1,11 @@
 package org.hikst.Simulator;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+//import java.net.InetAddress;
+//import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+//import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +25,7 @@ public class Simulator
 	private final int Simulation_Low_Limit;
 	private final int Number_Of_Threads_Per_Processor = 10;
 	
-	private boolean active;
+	private boolean active = true;
 	//private DatabaseConnection connection;
 	
 	public Simulator()
@@ -33,7 +34,7 @@ public class Simulator
 		this.Simulation_High_Limit = runTime.availableProcessors()*Number_Of_Threads_Per_Processor;
 		this.Simulation_Low_Limit = Simulation_High_Limit*3/4;
 		
-		//start simulation thread....
+		System.out.println("Starting simulator-thread...");
 		new Thread(new ImprovedSimulation()).start();
 	}
 	
@@ -41,14 +42,8 @@ public class Simulator
 	{
 		public void run()
 		{	
-			Settings settings = new Settings();
-		
-			int simulator_id = settings.getSimulatorID();
-			
-			if(!checkSimulatorIsRegistered(simulator_id))
-			{
-				registerSimulator(simulator_id);
-			}
+			int simulator_id = Settings.getSimulatorID();
+			System.out.println("My simulator id is :"+simulator_id);
 			
 			while(active)
 			{				
@@ -57,6 +52,7 @@ public class Simulator
 				doSimulations(simulator_id);
 			}
 			
+			System.out.println("Turning off simulator...");
 			updateSimulatorStatus(Simulator.Simulator_Off,simulator_id);
 		}
 		
@@ -64,14 +60,19 @@ public class Simulator
 	
 	public void doSimulations(int simulator_id)
 	{
-		int limit = Math.min(0,this.Simulation_High_Limit - Thread.activeCount());
+		System.out.println("Number of simulation threads running: "+Math.max(Thread.activeCount()-2,0));
+		int limit = Math.max(0,this.Simulation_High_Limit - (Thread.activeCount() - 2));
 		
 		if(limit > 0)
-		{
+		{	
+			System.out.println("Can receive a workload of "+limit+" requests from database");
+			System.out.println("Downloads a maximum of "+limit+" requests from database...");
 			ArrayList<SimulationRequest> requests = getSimulationRequests(simulator_id, limit);
-		
+			
 			if(requests.size() > 0)
 			{
+				System.out.println("Number of simulation requests recieved from database: "+requests.size());
+				System.out.println("Starting "+requests.size()+" new simulation threads..");
 				ExecutorService service = Executors.newFixedThreadPool(requests.size());
 				
 				for(int i = 0; i<requests.size(); i++)
@@ -84,14 +85,15 @@ public class Simulator
 		}
 		else
 		{
-			//write out message that the simulator has enough to do
+			System.out.println("Workload too high.. Cancelling downloading of new requests");
 		}
 	}
 	
 	public void sleep()
 	{
-		//sleep 10000 minutes
-		long sleepTime = 10000l;
+		//sleep 10000 milliseconds
+		System.out.println("Waiting 1000 milliseconds...");
+		long sleepTime = 1000l;
 		try {
 			Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {
@@ -106,13 +108,49 @@ public class Simulator
 		
 		try
 		{
+			System.out.println("Downloading...");
+			ArrayList<Integer> requestIDs = new ArrayList<Integer>();
+			
+			int statusId = Status.getInstance().getStatusID(SimulationRequest.Request_Pending);
+			
 			Connection connection = Settings.getDBC();
-			String query = "";
+			String query = "SELECT ID FROM " +
+					"Simulator_Queue_Objects WHERE Status_ID=? AND Simulator_ID=? limit ?";
 			PreparedStatement statement = connection.prepareStatement(query);
-		
+			statement.setInt(1, statusId);
+			statement.setInt(2, simulator_id);
+			statement.setInt(3, limit);
+			ResultSet set = statement.executeQuery();
+			
+			while(set.next())
+			{
+				requestIDs.add(set.getInt(1));
+			}
+			
+			statement.close();
+			System.out.println("Received "+requestIDs.size()+" requests");
+			
+			for(int i = 0; i<requestIDs.size(); i++)
+			{
+				try {
+					SimulationRequest request = new SimulationRequest(requestIDs.get(i));
+					requests.add(request);
+				} catch (ObjectNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			System.out.println("Download successful");
+			
 		}catch(SQLException ex)
-		{
+		{	
+			System.out.println("Download failed");
 			ex.printStackTrace();
+		} catch (StatusIdNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("The ID to the status \""+SimulationRequest.Request_Pending+"\" was not found");
+			e.printStackTrace();
 		}
 		
 		
@@ -121,13 +159,13 @@ public class Simulator
 		return requests;
 	}
 	
-	public boolean checkSimulatorIsRegistered(int simulator_id)
+	/*public boolean checkSimulatorIsRegistered(int simulator_id)
 	{
 		Connection connection = Settings.getDBC();
 		
 		try
-		{
-			String query = "SELECT ID WHERE ID=?";
+		{	
+			String query = "SELECT ID FROM Simulator WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, simulator_id);
 			ResultSet set = statement.executeQuery();
@@ -155,7 +193,7 @@ public class Simulator
 			String url = IP_adress;
 			long last_seen_time = new java.util.Date().getTime();
 			
-			String query = "INSERT INTO Simulator(ID,Status_ID,IP_Adress,Last_Seen_TS,Url) VALUES(?,?,?,?);";
+			String query = "INSERT INTO Simulator(ID,Status_ID,IP_Adress,Last_Seen_TS,Url) VALUES(?,?,?,?,?);";
 			PreparedStatement statement = connection.prepareStatement(query);
 		
 			statement.setInt(1, simulator_id);
@@ -178,24 +216,29 @@ public class Simulator
 		{
 			ex.printStackTrace();
 		}
-	}
+	}*/
 	
 	private void validateSimulatorStatus(int simulatorId)
 	{
+		System.out.println("Validating simulator-status...");
+		
 		ThreadGroup threadRoot = Thread.currentThread().getThreadGroup();
 		
 		int activeThreadCount = threadRoot.activeCount();
 		
 		if(activeThreadCount > this.Simulation_High_Limit)
 		{
+			System.out.print("The workload is too high, update simulator-status to database..");
 			this.updateSimulatorStatus(Simulator.Simulator_Work_Status_High,simulatorId);
 		}
 		else if(activeThreadCount <= this.Simulation_High_Limit && activeThreadCount > this.Simulation_Low_Limit)
 		{
+			System.out.println("The workload is average, update simulator-status to database..");
 			this.updateSimulatorStatus(Simulator.Simulator_Work_Status_Medium,simulatorId);
 		}
 		else
 		{
+			System.out.println("The workload is low, update simulator-status to database..");
 			this.updateSimulatorStatus(Simulator_Work_Status_Low,simulatorId);
 		}
 	}
@@ -206,8 +249,9 @@ public class Simulator
 		
 		try
 		{
+			System.out.println("Uploading status to database...");
 			int statusId = Status.getInstance().getStatusID(status);
-			String query = "UPDATE TABLE SIMULATOR SET StatusID=? WHERE ID=?;";
+			String query = "UPDATE Simulator SET status_id=? WHERE ID=?;";
 			
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, statusId);
@@ -217,16 +261,20 @@ public class Simulator
 			
 		}catch(SQLException ex)
 		{
+			System.out.println("Uploading status to database failed");
 			ex.printStackTrace();
 		}
 		catch(StatusIdNotFoundException ex)
 		{
+			System.out.println("Status id not found for the status: \""+status+"\" in the database");
 			ex.printStackTrace();
 		}
 	}
 	
 	public static void main(String[] args)
 	{
+			new Settings();
+			AliveMessenger.getInstance();
 			new Simulator();
 	}
 	

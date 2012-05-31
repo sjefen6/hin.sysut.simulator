@@ -22,17 +22,16 @@ public class SimulationRequest
 		return simulationDescriptionsID;
 	}
 	
-	public SimulationRequest(int id,int simulator_id) throws ObjectNotFoundException
+	public SimulationRequest(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
 		
 		try
 		{
-			String query = "SELECT ID,Simulations_Descriptions_ID FROM " +
-					"Simulator_Queue_Objects WHERE ID=? AND Simulator_ID=?; ";
+			String query = "SELECT ID,Simulation_Descriptions_ID FROM " +
+					"Simulator_Queue_Objects WHERE ID=?; ";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, id);
-			statement.setInt(2, simulator_id);
 			ResultSet set = statement.executeQuery();
 			
 			if(set.next())
@@ -59,7 +58,7 @@ public class SimulationRequest
 			
 			int statusID = Status.getInstance().getStatusID(Request_Processing);
 			
-			String query = "UPDATE TABLE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
+			String query = "UPDATE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
 			
 			PreparedStatement statement =  connection.prepareStatement(query);
 			statement.setInt(1, statusID);
@@ -84,7 +83,7 @@ public class SimulationRequest
 			
 			int statusID = Status.getInstance().getStatusID(Request_Finished);
 			
-			String query = "UPDATE TABLE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
+			String query = "UPDATE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
 			
 			PreparedStatement statement =  connection.prepareStatement(query);
 			statement.setInt(1, statusID);

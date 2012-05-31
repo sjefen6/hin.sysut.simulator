@@ -54,6 +54,11 @@ public class SimulatorObject
 		this.effect = effect;
 	}
 	
+	public String toString()
+	{
+		return "\nName: "+name+"\nPower: "+this.effect+" W\nVoltage: "+voltage+" V\nCurrent: "+current+" A\n";
+	}
+	
 	public SimulatorObject(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
@@ -75,7 +80,7 @@ public class SimulatorObject
 				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);
-				statement.setInt(1, this.ID);
+				anotherStatement.setInt(1, this.ID);
 				ResultSet anotherSet = anotherStatement.executeQuery();
 			
 				while(anotherSet.next())
@@ -90,7 +95,7 @@ public class SimulatorObject
 		}catch(SQLException ex)
 		{
 			ex.printStackTrace();
-			throw new ObjectNotFoundException();
+			//throw new ObjectNotFoundException();
 		}
 	}
 }
