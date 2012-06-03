@@ -4,16 +4,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
+
+import javax.swing.text.DateFormatter;
 
 public class UsagePattern {
 	private int id;
 	private String name;
 	private int[] pattern = new int[24];
 	private boolean actual;
-
+	private Calendar calendar;
+	
 	public UsagePattern(int id) throws UsagePatternNotFoundException {
+		
+		calendar = new GregorianCalendar();
+		
 		String query = "SELECT * FROM Usage_Pattern WHERE ID=?; ";
 		PreparedStatement statement;
 		try {
@@ -57,16 +65,21 @@ public class UsagePattern {
 	}
 
 	public int getProbability(Date time) {
-		int thisPattern = pattern[time.getHours()];
+		
+		calendar.setTime(time);
+		int hour  = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		
+		int thisPattern = pattern[hour];
 
 		int nextPattern;
-		if (time.getHours() < 23)
-			nextPattern = pattern[time.getHours() + 1];
+		if (hour < 23)
+			nextPattern = pattern[hour + 1];
 		else
 			nextPattern = pattern[0];
 
 		// Modifying thisPattern to take account for minutes into the hour
-		double percentageOfNextPattern = (double) time.getMinutes() / 60.0;
+		double percentageOfNextPattern = (double) minute / 60.0;
 		thisPattern = thisPattern + (int) ((double) (nextPattern - thisPattern) * (double) percentageOfNextPattern);
 
 		if (actual) {
@@ -81,6 +94,7 @@ public class UsagePattern {
 			else
 				// The device is off
 				return 0;
+			
 		}
 	}
 

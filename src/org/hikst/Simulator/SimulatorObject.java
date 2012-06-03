@@ -15,6 +15,7 @@ public class SimulatorObject
 	private float voltage;
 	private float current;
 	private int impact_degree_ID;
+	private int usage_pattern_ID;
 	private ArrayList<Integer> sons = new ArrayList<Integer>();
 	
 	public int getID() {
@@ -37,6 +38,14 @@ public class SimulatorObject
 		return current;
 	}
 	
+	public int getImpact_degree_ID() {
+		return impact_degree_ID;
+	}
+
+	public int getUsage_pattern_ID() {
+		return usage_pattern_ID;
+	}
+
 	public ArrayList<Integer> getSons()
 	{
 		return sons;
@@ -45,13 +54,6 @@ public class SimulatorObject
 	public boolean hasSons()
 	{
 		return sons.size() > 0;
-	}
-	
-	public SimulatorObject(int iD, String name, float effect) {
-		super();
-		ID = iD;
-		this.name = name;
-		this.effect = effect;
 	}
 	
 	public String toString()
@@ -65,7 +67,7 @@ public class SimulatorObject
 		
 		try
 		{
-			String query = "SELECT ID, Name, Effect, Voltage, Current, Impact_Degree_ID FROM Objects";
+			String query = "SELECT * FROM Objects";
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet set = statement.executeQuery();
 			
@@ -77,6 +79,7 @@ public class SimulatorObject
 				this.voltage = set.getFloat(4);
 				this.current = set.getFloat(5);
 				this.impact_degree_ID = set.getInt(6);
+				this.usage_pattern_ID = set.getInt(7);
 				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);

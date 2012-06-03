@@ -3,6 +3,7 @@ package org.hikst.Simulator;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public class Simulation implements Runnable
 		
 			Date startTime  = description.getTimeStart();
 			Date endTime = description.getTimeEnd();
+			
 			long intervall = (long)description.getInterval();
 			int simulation_descriptions_id = description.getID();
 			SimulatorObject simulatorObject = description.getSimulatorObject();
@@ -100,18 +102,35 @@ public class Simulation implements Runnable
 				
 				System.out.println("Request\""+this.request.getID()+"\": Begins Simulation..");
 				
+				float effect = simulatorObject.getEffect();
+				float current = simulatorObject.getCurrent();
+				float voltage = simulatorObject.getVoltage();
+				float power_consumption = effect;
+				UsagePattern usagePattern = null;
+				
+				try
+				{
+					usagePattern = getUsagePattern(simulatorObject.getID());	
+				}
+				catch(UsagePatternNotFoundException ex)
+				{
+					System.out.println("Usage pattern for object with ID=\""+simulatorObject.getID()+"\" could not be determined");
+					ex.printStackTrace();
+				}
+				
 				while(time.before(endTime))
 				{
-					float effect = simulatorObject.getEffect();
-					float current = simulatorObject.getCurrent();
-					float voltage = simulatorObject.getVoltage();
-				
-					float power_consumption = effect;
+					int probability = usagePattern.getProbability(time);
 					
-					System.out.println("Request\""+this.request.getID()+"\": Time = \""+time.toGMTString()+" Power = \""+effect+" W\" Current = \""+current+" A\" Voltage = \""+voltage+" V\" Power Consumption = \""+power_consumption+"\"");
+					float simulatedEffect = (effect * (float)probability)/100.0f;
+					float simulatedCurrent = (current * (float)probability)/100.0f;
+					float simulatedVoltage = (voltage * (float)probability)/100.0f;
+					float simulatedConsumption = (power_consumption * (float)probability)/100.0f;
+					
+					System.out.println("Request\""+this.request.getID()+"\": Time = \""+time.toGMTString()+" Power = \""+simulatedEffect+" W\" Current = \""+simulatedCurrent+" A\" Voltage = \""+simulatedVoltage+" V\" Power Consumption = \""+simulatedConsumption+"\"");
 					
 					System.out.println("Request\""+this.request.getID()+"\": uploads result to database");
-					this.saveResults(startTime, effect, power_consumption, voltage, current, simulation_descriptions_id);
+					this.saveResults(time, simulatedEffect, simulatedConsumption, simulatedVoltage, simulatedCurrent, simulation_descriptions_id);
 					//simulate here and do something something here
 					//calculate number of simulations
 				
@@ -128,6 +147,104 @@ public class Simulation implements Runnable
 				this.request.setStatusToFinished();
 			}
 	
+	}
+	
+	private UsagePattern getUsagePattern(int object_id)throws UsagePatternNotFoundException
+	{
+		UsagePattern pattern = null;
+		
+		try
+		{
+			int usage_pattern_id = getUsagePatternID(object_id);
+			pattern = new UsagePattern(usage_pattern_id);
+		}
+		catch(UsagePatternNotFoundException ex)
+		{
+			if(hasParent(object_id))
+			{
+				pattern = getUsagePattern(getParentID(object_id));
+			}
+			else
+			{
+				throw new UsagePatternNotFoundException();
+			}
+		}
+		
+		return pattern;
+	}
+	
+	private boolean hasParent(int object_id)
+	{
+		try
+		{
+			Connection connection = Settings.getDBC();
+			
+			String query = "SELECT Father_ID from PartObjects WHERE Son_ID=?";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, object_id);
+			ResultSet set = statement.executeQuery();
+			
+			return set.next();
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
+	private int getParentID(int object_id)
+	{
+		try
+		{
+			Connection connection = Settings.getDBC();
+			
+			String query = "SELECT Father_ID from PartObjects WHERE Son_ID=?";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, object_id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				return set.getInt(1);
+			}
+			else
+			{
+				return Integer.MAX_VALUE;
+			}
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+			return Integer.MAX_VALUE;
+		}
+	}
+	
+	private int getUsagePatternID(int object_id)
+	{
+		try
+		{
+			Connection connection = Settings.getDBC();
+			
+			String query = "SELECT Usage_Pattern_ID FROM Objects WHERE ID=?";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, object_id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				return set.getInt(1);
+			}
+			else
+			{
+				return Integer.MAX_VALUE;
+			}
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+			return Integer.MAX_VALUE;
+		}
 	}
 	
 	private boolean checkCrawlerDependencies()
