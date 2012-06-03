@@ -50,6 +50,30 @@ public class Crawler
 	{
 		ArrayList<CrawlerRequest> crawlerRequests = new ArrayList<CrawlerRequest>();
 		
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "SELECT ";
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet set = statement.executeQuery();
+			
+			while(set.next())
+			{
+				int id = set.getInt(1);
+				int type_id = set.getInt(2);
+				int longitude = set.getInt(3);
+				int latitude = set.getInt(4);
+				java.util.Date time_from = new Date(set.getLong(5));
+				java.util.Date time_to = new Date(set.getLong(6));
+				
+			}
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		
 		return crawlerRequests;
 	}
 	
@@ -70,6 +94,18 @@ public class Crawler
 		
 		private void processRequest(CrawlerRequest request)
 		{
+			try
+			{
+			
+				String type = Type.getInstance().getType(request.getType());
+			
+				if(type.equals(Impact.IMPACT_WEATHER)){}
+				
+			}catch(TypeNotFoundException ex)
+			{
+				System.out.println("No type with the ID = \""+request.getType()+"\" was found..");
+				ex.printStackTrace();
+			}
 			
 		}
 	}
