@@ -24,5 +24,4 @@ public class sjefen6_tester {
 			e.printStackTrace();
 		}
 	}
-
 }

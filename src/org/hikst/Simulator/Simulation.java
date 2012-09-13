@@ -17,6 +17,13 @@ public class Simulation implements Runnable
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
 	
+	
+	//TODO: Fix comments
+	/***
+	 * @param request
+	 * 
+	 * Creates a new simulation on request
+	 */
 	public Simulation(SimulationRequest request)
 	{
 		this.request = request;

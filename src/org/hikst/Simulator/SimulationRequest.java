@@ -22,6 +22,13 @@ public class SimulationRequest
 		return simulationDescriptionsID;
 	}
 	
+	/**
+	 * @param id
+	 * @throws ObjectNotFoundException
+	 * 
+	 * Creates a new simulation request from data given in the database at specified row id.
+	 * Throws exception if the row is null.
+	 */
 	public SimulationRequest(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
@@ -75,6 +82,9 @@ public class SimulationRequest
 		}
 	}
 	
+	/**
+	 * TODO:
+	 */
 	public void setStatusToFinished()
 	{
 		try

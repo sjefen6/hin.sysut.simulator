@@ -38,6 +38,9 @@ public class Simulator
 		new Thread(new ImprovedSimulation()).start();
 	}
 	
+	/**
+	 *	TODO:
+	 */
 	private class ImprovedSimulation implements Runnable
 	{
 		public void run()
@@ -58,6 +61,11 @@ public class Simulator
 		
 	}
 	
+	/**
+	 * TODO:
+	 * 
+	 * @param simulator_id
+	 */
 	public void doSimulations(int simulator_id)
 	{
 		System.out.println("Number of simulation threads running: "+Math.max(Thread.activeCount()-2,0));

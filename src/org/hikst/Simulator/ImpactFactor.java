@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * TODO:
+ */
 public class ImpactFactor 
 {
 	public static final int IMPACT_WEATHER = 1;
@@ -35,8 +38,17 @@ public class ImpactFactor
 		}
 	}
 	
+	/**
+	 *	TODO:
+	 */
 	private class ImpactParser
 	{
+		
+		/**
+		 * @param type
+		 * @param content
+		 * @return 
+		 */
 		public float parseScale(int type,String content)
 		{
 			//parse content here
@@ -54,6 +66,10 @@ public class ImpactFactor
 			
 		}
 		
+		/**
+		 * @param content
+		 * @return Not-a-Number float value
+		 */
 		private float parseWeatherInformation(String content)
 		{
 			return Float.NaN;

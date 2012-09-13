@@ -1,6 +1,6 @@
 package org.hikst.Simulator;
 
-/*
+/**
  * AliveMessenger
  * Reports to the database every minute that it is alive and running.
  * Make sure settings are correctly set up before using.

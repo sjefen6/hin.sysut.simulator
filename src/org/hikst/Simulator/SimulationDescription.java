@@ -16,26 +16,56 @@ public class SimulationDescription
 	private int ID;
 	private ArrayList<ImpactFactor> impactFactors = new ArrayList<ImpactFactor>();
 	
+	/**
+	 * Returns the ID of this SimulationDescription
+	 * 
+	 * @return ID
+	 */
 	public int getID() {
 		return ID;
 	}
 
+	/**
+	 * Returns the start time as a <I>Date</I>
+	 * 
+	 * @return timeStart 
+	 */
 	public Date getTimeStart() {
 		return timeStart;
 	}
 
+	/**
+	 * Returns the end time as a <I>Date</I>
+	 * 
+	 * @return timeEnd 
+	 */
 	public Date getTimeEnd() {
 		return timeEnd;
 	}
 
+	/**
+	 * Returns the interval of which to preform simulations in this simulation.
+	 * 
+	 * @return interval
+	 */
 	public float getInterval() {
 		return interval;
 	}
 	
+	/**
+	 * Returns the attached <I>SimulatorObject</I>.
+	 * 
+	 * @return simulatorObject
+	 */
 	public SimulatorObject getSimulatorObject() {
 		return simulatorObject;
 	}
 	
+	/**
+	 * Returns an ArrayList of the attached <I>impactFactor</I>
+	 * 
+	 * @return impactFactors
+	 */
 	public ArrayList<ImpactFactor> getImpactFactors()
 	{
 		return impactFactors;
@@ -49,7 +79,11 @@ public class SimulationDescription
 		this.simulatorObject = simulatorObject;
 	}*/
 	
-
+	/**
+	 * Constructor for the class. 
+	 * 
+	 * @exception ObjectNotFoundException
+	 */
 	public SimulationDescription(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
