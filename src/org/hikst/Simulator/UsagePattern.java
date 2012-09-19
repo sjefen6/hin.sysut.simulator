@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.text.DateFormatter;
 
@@ -16,7 +17,6 @@ public class UsagePattern {
 	private String name;
 	private int[] pattern = new int[24];
 	private boolean actual;
-	private boolean sun;
 	private Calendar calendar;
 	
 	//TODO:
@@ -53,20 +53,6 @@ public class UsagePattern {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public double getHoursOfSunLight(double latitude)
-	{
-		int date = calendar.get(Calendar.DAY_OF_YEAR);
-		
-		double p = Math.asin(0.39795*Math.cos(0.2163108 + 2*Math.atan(0.9671396*Math.tan(0.00860*(date-186)))));
-		
-		
-		double lengthOfDay = 24 - (24/Math.PI)*Math.acos((Math.sin(0.8333*Math.PI/180)+
-								Math.sin(latitude*Math.PI/180)*Math.sin(p))
-								/(Math.cos(latitude*Math.PI/180)*Math.cos(p)));		
-		
-		return lengthOfDay;
 	}
 
 	public int getId() {
