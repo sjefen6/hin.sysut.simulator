@@ -16,8 +16,10 @@ import javax.print.attribute.standard.DateTimeAtCompleted;
  */
 public class ImpactFactor 
 {
+	public static final int IMPACT_SUN = 0;
 	public static final int IMPACT_WEATHER = 1;
-	
+	public static final int IMPACT_BUILDING = 2;
+
 	private int type_id;
 	private String content;
 	
@@ -26,6 +28,34 @@ public class ImpactFactor
 	//Variables for sun related factors
 	private Double lengthOfDay;
 	private boolean sunlight;
+	private Date sunDate;
+	
+	//Variables related to building type
+	private boolean isResidential;
+	private int inhabitans;
+	
+	/**
+	 * Identifier for energy class A
+	 */
+	public static final int ENERGY_CLASS_A = 100;
+	/**
+	 * Identifier for energy class B
+	 */
+	public static final int ENERGY_CLASS_B = 101;
+	/**
+	 * Identifier for energy class C
+	 */
+	public static final int ENERGY_CLASS_C = 102;
+	/**
+	 * Identifier for energy class D
+	 */
+	public static final int ENERGY_CLASS_D = 103;
+	/**
+	 * Identifier for energy class E
+	 */
+	public static final int ENERGY_CLASS_E = 104;
+	
+	
 	
 	public ImpactFactor(int id)
 	{
@@ -56,25 +86,31 @@ public class ImpactFactor
 	 * Calculates the number of daylight hours on the specified 
 	 * day defined in the given time and at the given geographical latitude.
 	 * 
+	 * Formula found at: http://mathforum.org/library/drmath/view/56478.html
+	 * Use 0.26667 or 0.8333 as constant, described in article.
+	 * 
 	 * @param latitude Latitude in degrees
 	 * @param time Date object with time data of the desired time.
 	 */
 	private void setLengthOfDay(double latitude, Date time)
 	{
-		calendar.setTime(time);
+		sunDate = time;
+		calendar.setTime(sunDate);
 		int date = calendar.get(Calendar.DAY_OF_YEAR);
 		
 		double p = Math.asin(0.39795*Math.cos(0.2163108 + 2*Math.atan(0.9671396*Math.tan(0.00860*(date-186)))));
 		
-		lengthOfDay = 24 - (24/Math.PI)*Math.acos((Math.sin(0.8333*Math.PI/180)+
+		lengthOfDay = 24 - (24/Math.PI)*Math.acos((Math.sin(0.26667*Math.PI/180)+
 								Math.sin(latitude*Math.PI/180)*Math.sin(p))
 								/(Math.cos(latitude*Math.PI/180)*Math.cos(p)));		
 	}
 	
 	/**
+	 * Gets this object's lengthOfDay.
+	 * 
 	 * @return The length of this impactFactor's day in hours, if the length is not specified, returns Not a Number.
 	 */
-	public Double getHoursOfSunLight()
+	public Double getHoursOfSunlight()
 	{		
 		if (lengthOfDay != null)
 			return lengthOfDay;
@@ -82,31 +118,43 @@ public class ImpactFactor
 			return Double.NaN;
 	}
 	
-	public void setSunlight(Date time)
+	/**
+	 * Checks if there is sunlight at the specified time. If this object of
+	 * ImpactFactor doesn't have a specified lengthOfDay yet, it will be set
+	 * to false.
+	 */
+	public void setSunlight()
 	{
-		calendar.setTime(time);
-		double tempHours = getHoursOfSunLight();
-		double tempTime = time.getHours() + TimeUnit.MINUTES.toHours(time.getMinutes());
-		
-		if(tempHours != Double.NaN)
-		{
-			if (tempTime > (12 - (tempHours/2)) && tempTime < (12 + tempHours/2))
+		if(sunDate != null){
+			calendar.setTime(sunDate);
+			double tempHours = getHoursOfSunlight();
+			double tempTime = sunDate.getHours() + TimeUnit.MINUTES.toHours(sunDate.getMinutes());
+			
+			if(tempHours != Double.NaN)
 			{
-				sunlight = false;
+				if (tempTime > (12 - (tempHours/2)) && tempTime < (12 + tempHours/2))
+				{
+					sunlight = true;
+				}
+				else
+				{
+					sunlight = false;
+				}
 			}
-			else
-				sunlight = false;
-		}
+		}		
 		else
 			sunlight = false;
 	}
 	
+	/**
+	 * Gets this object's sunlight status.
+	 * 
+	 * @return Returns if there's sunlight or not at this object's time.
+	 */
 	public boolean getSunlight()
 	{
 		return sunlight;
 	}
-	
-	
 	
 	/**
 	 *	TODO:
@@ -128,12 +176,22 @@ public class ImpactFactor
 				{
 					return parseWeatherInformation(content);
 				}
+				case IMPACT_SUN:
+				{
+					return parseSunlightInformation(content);
+				}
 				default:
 				{
 					return Float.NaN;
 				}
 			}
 			
+		}
+		
+		//TODO:
+		private float parseSunlightInformation(String content)
+		{
+			return Float.NaN;
 		}
 		
 		/**

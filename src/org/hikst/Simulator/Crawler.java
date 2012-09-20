@@ -99,7 +99,7 @@ public class Crawler
 			
 				String type = Type.getInstance().getType(request.getType());
 			
-				if(type.equals(Impact.IMPACT_WEATHER)){}
+				if(type.equals(ImpactFactor.IMPACT_WEATHER)){}
 				
 			}catch(TypeNotFoundException ex)
 			{
