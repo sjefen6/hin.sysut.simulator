@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
 
 import javax.print.attribute.standard.DateTimeAtCompleted;
 
@@ -69,6 +71,13 @@ public class ImpactFactor
 	 * Identifier for energy class E
 	 */
 	public static final int ENERGY_CLASS_E = 104;
+	/**
+	 * Identifier for energy class F
+	 */
+	public static final int ENERGY_CLASS_F = 105;
+	
+	public static final int ENERGY_BUILDINGTYPE_HOUSE = 110;
+	public static final int ENERGY_BUILDINGTYPE_BLOCK = 111;
 	
 	
 	
@@ -201,6 +210,81 @@ public class ImpactFactor
 	public double getTemperatureHDD()
 	{
 		return temperatureHDD;
+	}
+	
+	//TODO: fix class up properly
+	private void setTemperatureHDD(double watt, int bhid, int btid)
+	{
+		float tempHLC = temperatureHeatLossCoefficency(bhid, btid);
+	}
+	
+	/**
+	 * TODO: Fix comments
+	 * 
+	 * @param bhid
+	 * @param btid
+	 * @return
+	 */
+	private float temperatureHeatLossCoefficency(int bhid, int btid)
+	{
+		float tempbh;
+		Random tempr = new Random();
+		if (btid == ENERGY_BUILDINGTYPE_HOUSE){
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.45f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 46) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(24) + 71) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(34) + 96) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(34) + 131) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(79) + 166) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_BLOCK)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.35f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(19) + 36) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(19) + 56) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(34) + 76) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(39) + 150) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(69) + 220) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else 
+		{
+			tempbh = Float.NaN;
+		}
+		return tempbh;
 	}
 	
 	/**
