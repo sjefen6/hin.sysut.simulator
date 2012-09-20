@@ -18,7 +18,8 @@ public class ImpactFactor
 {
 	public static final int IMPACT_SUN = 0;
 	public static final int IMPACT_WEATHER = 1;
-	public static final int IMPACT_BUILDING = 2;
+	public static final int IMPACT_TEMPERATURE = 2;
+	public static final int IMPACT_BUILDING = 3;
 
 	private int type_id;
 	private String content;
@@ -26,16 +27,30 @@ public class ImpactFactor
 	private Calendar calendar;
 	
 	//Variables for sun related factors
-	private Double lengthOfDay;
-	private boolean sunlight;
+	private Double sunLengthOfDay;
+	private boolean sunLight;
 	private Date sunDate;
+	
+	//Variables and constants related to temperatures
+	private double temperatureElasticity;
+	private double temperatureReal;
+	private double temperatureExpected;
+	private double temperatureAverage;
+	private double temperatureMin;
+	private double temperatureMax;
+	private double temperatureHDD;
+	public static final double temperatureBaseResidential = 18.0;
+	public static final double temperatureBaseOffice = 15.0;
+	public static final double temperatureBaseIndustry = 15.0;
+	
+	//TODO: http://www.vesma.com/ddd/ddcalcs.html
 	
 	//Variables related to building type
 	private boolean isResidential;
 	private int inhabitans;
 	
 	/**
-	 * Identifier for energy class A
+	 * Identifier for energy class A, 
 	 */
 	public static final int ENERGY_CLASS_A = 100;
 	/**
@@ -82,6 +97,11 @@ public class ImpactFactor
 		}
 	}
 	
+	//----------------------------
+	// Methods related to the sun
+	// factor
+	//----------------------------
+	
 	/**
 	 * Calculates the number of daylight hours on the specified 
 	 * day defined in the given time and at the given geographical latitude.
@@ -92,7 +112,7 @@ public class ImpactFactor
 	 * @param latitude Latitude in degrees
 	 * @param time Date object with time data of the desired time.
 	 */
-	private void setLengthOfDay(double latitude, Date time)
+	private void setSunLengthOfDay(double latitude, Date time)
 	{
 		sunDate = time;
 		calendar.setTime(sunDate);
@@ -100,60 +120,87 @@ public class ImpactFactor
 		
 		double p = Math.asin(0.39795*Math.cos(0.2163108 + 2*Math.atan(0.9671396*Math.tan(0.00860*(date-186)))));
 		
-		lengthOfDay = 24 - (24/Math.PI)*Math.acos((Math.sin(0.26667*Math.PI/180)+
+		sunLengthOfDay = 24 - (24/Math.PI)*Math.acos((Math.sin(0.26667*Math.PI/180)+
 								Math.sin(latitude*Math.PI/180)*Math.sin(p))
 								/(Math.cos(latitude*Math.PI/180)*Math.cos(p)));		
 	}
 	
 	/**
-	 * Gets this object's lengthOfDay.
+	 * Gets method for sunLengthOfDay
 	 * 
 	 * @return The length of this impactFactor's day in hours, if the length is not specified, returns Not a Number.
 	 */
-	public Double getHoursOfSunlight()
+	public Double getSunLengthOfDay()
 	{		
-		if (lengthOfDay != null)
-			return lengthOfDay;
+		if (sunLengthOfDay != null)
+			return sunLengthOfDay;
 		else
 			return Double.NaN;
 	}
 	
 	/**
 	 * Checks if there is sunlight at the specified time. If this object of
-	 * ImpactFactor doesn't have a specified lengthOfDay yet, it will be set
+	 * ImpactFactor doesn't have a specified sunLengthOfDay yet, it will be set
 	 * to false.
 	 */
-	public void setSunlight()
+	public void setSunSunlight()
 	{
 		if(sunDate != null){
 			calendar.setTime(sunDate);
-			double tempHours = getHoursOfSunlight();
+			double tempHours = getSunLengthOfDay();
 			double tempTime = sunDate.getHours() + TimeUnit.MINUTES.toHours(sunDate.getMinutes());
 			
 			if(tempHours != Double.NaN)
 			{
 				if (tempTime > (12 - (tempHours/2)) && tempTime < (12 + tempHours/2))
 				{
-					sunlight = true;
+					sunLight = true;
 				}
 				else
 				{
-					sunlight = false;
+					sunLight = false;
 				}
 			}
 		}		
 		else
-			sunlight = false;
+			sunLight = false;
 	}
 	
 	/**
-	 * Gets this object's sunlight status.
+	 * Get method for sunlight
 	 * 
 	 * @return Returns if there's sunlight or not at this object's time.
 	 */
-	public boolean getSunlight()
+	public boolean getSunSunlight()
 	{
-		return sunlight;
+		return sunLight;
+	}
+	
+	//----------------------------
+	// Methods related to the 
+	// weather factor
+	//----------------------------
+	
+	//TODO:
+	
+	//----------------------------
+	// Methods related to the 
+	// temperature factor
+	//----------------------------
+	
+	/**
+	 * Get method for temperatureElasticity.
+	 * 
+	 * @return temperatureElasticity
+	 */
+	public double getTemperatureElasticity()
+	{
+		return temperatureElasticity;
+	}
+	
+	public double getTemperatureHDD()
+	{
+		return temperatureHDD;
 	}
 	
 	/**
