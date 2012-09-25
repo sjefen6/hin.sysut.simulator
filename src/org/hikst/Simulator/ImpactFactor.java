@@ -19,8 +19,8 @@ import javax.print.attribute.standard.DateTimeAtCompleted;
 public class ImpactFactor 
 {
 	public static final int IMPACT_SUN = 0;
-	public static final int IMPACT_WEATHER = 1;
-	public static final int IMPACT_TEMPERATURE = 2;
+	public static final int IMPACT_TEMPERATURE = 1;
+	public static final int IMPACT_WEATHER = 2;
 	public static final int IMPACT_BUILDING = 3;
 
 	private int type_id;
@@ -33,23 +33,20 @@ public class ImpactFactor
 	private boolean sunLight;
 	private Date sunDate;
 	
-	//Variables and constants related to temperatures
+	//Variables and constants related to temperatures and building type
 	private double temperatureElasticity;
 	private double temperatureReal;
 	private double temperatureExpected;
 	private double temperatureAverage;
 	private double temperatureMin;
 	private double temperatureMax;
-	private double temperatureHDD;
+	private double temperatureDD;
+	private double temperatureHLC;		//temperature heat-loss coefficency
 	public static final double temperatureBaseResidential = 18.0;
 	public static final double temperatureBaseOffice = 15.0;
 	public static final double temperatureBaseIndustry = 15.0;
 	
-	//TODO: http://www.vesma.com/ddd/ddcalcs.html
-	
-	//Variables related to building type
-	private boolean isResidential;
-	private int inhabitans;
+	//TODO: http://www.vesma.com/ddd/index.htm
 	
 	/**
 	 * Identifier for energy class A, 
@@ -207,25 +204,25 @@ public class ImpactFactor
 		return temperatureElasticity;
 	}
 	
-	public double getTemperatureHDD()
+	public double getTemperatureDD()
 	{
-		return temperatureHDD;
+		return temperatureDD;
 	}
 	
-	//TODO: fix class up properly
-	private void setTemperatureHDD(double watt, int bhid, int btid)
+	public double getTemperatureHLC()
 	{
-		float tempHLC = temperatureHeatLossCoefficency(bhid, btid);
+		return temperatureHLC;
 	}
 	
 	/**
-	 * TODO: Fix comments
+	 * Sets the heat-loss coefficency for a house or blockhouse with given
+	 * energy class. Will generate a random coefficency within the energy
+	 * class's levels, to create variety in the simulations. 
 	 * 
-	 * @param bhid
-	 * @param btid
-	 * @return
+	 * @param bhid Building class identifier
+	 * @param btid Building type identifier
 	 */
-	private float temperatureHeatLossCoefficency(int bhid, int btid)
+	private void setTemperatureHeatLossCoefficency(int bhid, int btid)
 	{
 		float tempbh;
 		Random tempr = new Random();
@@ -284,7 +281,68 @@ public class ImpactFactor
 		{
 			tempbh = Float.NaN;
 		}
-		return tempbh;
+		temperatureHLC = (double)tempbh;
+	}
+	
+	
+	//TODO: Refine and define to work properly. There are expected bugs in this method
+	/**
+	 * Finds the Degree Days given.
+	 * 
+	 * The calculation requires daily measurements of maximum and minimum outside air 
+	 * temperatures ( Tmax and Tmin ) and a 'base temperature' Tbase, nominated by the 
+	 * user as an estimate of the outside air temperature at which no artificial heating
+	 * (or cooling) is required.
+	 * 
+	 * http://www.vesma.com/ddd/ddcalcs.htm
+	 * 
+	 * @parm base Desired temperature
+	 * @parm min Minimum temperature for this day.
+	 * @parm max Maximum temperature for this day.
+	 * @parm heat True if user wants <b>heating</b> degree days, false if user wants <b>cooling</b> degree days.
+	 */
+	private void setTemperatureDegreeDays(double base, double min, double max, boolean heat)
+	{
+		temperatureMax = max;
+		temperatureMin = min;
+		if(heat)
+		{
+			if(min > base)
+			{
+				temperatureDD = 0;
+			}
+			else if((min + max)/2 > base)
+			{
+				temperatureDD = (base - min)/4;
+			}
+			else if(max >= base)
+			{
+				temperatureDD = (base - min)/2 - (max - base)/4;
+			}
+			else if(max < base)
+			{
+				temperatureDD = base - (max + min)/2;
+			}
+		}
+		else if(!heat)
+		{
+			if(max < base)
+			{
+				temperatureDD = 0;
+			}
+			else if((max + min)/2 < base)
+			{
+				temperatureDD = (max - base)/4;
+			}
+			else if(min <= base)
+			{
+				temperatureDD = (max - base)/2 - (base - min)/4;
+			}
+			else if(min>base)
+			{
+				temperatureDD = (max + min)/2 - base;
+			}
+		}
 	}
 	
 	/**
@@ -298,7 +356,7 @@ public class ImpactFactor
 		 * @param content
 		 * @return 
 		 */
-		public float parseScale(int type,String content)
+		public float parseScale(int type, String content)
 		{
 			//parse content here
 			switch(type)
@@ -306,6 +364,10 @@ public class ImpactFactor
 				case IMPACT_WEATHER:
 				{
 					return parseWeatherInformation(content);
+				}
+				case IMPACT_TEMPERATURE:
+				{
+					
 				}
 				case IMPACT_SUN:
 				{
@@ -321,6 +383,11 @@ public class ImpactFactor
 		
 		//TODO:
 		private float parseSunlightInformation(String content)
+		{
+			return Float.NaN;
+		}
+		
+		private float parseHLCInformation(String content)
 		{
 			return Float.NaN;
 		}
