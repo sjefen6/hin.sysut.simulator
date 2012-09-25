@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Impact_Degrees
+public class ImpactDegrees
 {
 	float percent;
 	int type;
@@ -27,13 +27,13 @@ public class Impact_Degrees
 	}
 	
 	
-	public Impact_Degrees(float percent, int type,String content) {
+	public ImpactDegrees(float percent, int type,String content) {
 		super();
 		this.percent = percent;
 		this.type = type;
 	}
 	
-	public Impact_Degrees(int id)
+	public ImpactDegrees(int id)
 	{
 		Connection connection = Settings.getDBC();
 		
