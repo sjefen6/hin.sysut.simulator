@@ -81,7 +81,7 @@ public class Simulation implements Runnable
 			
 			long intervall = (long)description.getInterval();
 			int simulation_descriptions_id = description.getID();
-			SimulatorObject simulatorObject = description.getSimulatorObject();
+			Object simulatorObject = description.getSimulatorObject();
 			
 			Date time = startTime;
 			
