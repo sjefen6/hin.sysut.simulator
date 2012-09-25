@@ -12,7 +12,7 @@ public class SimulationDescription
 	private Date timeStart;
 	private Date timeEnd;
 	private float interval;
-	private SimulatorObject simulatorObject;
+	private Object simulatorObject;
 	private int ID;
 	private ArrayList<ImpactFactor> impactFactors = new ArrayList<ImpactFactor>();
 	
@@ -57,7 +57,7 @@ public class SimulationDescription
 	 * 
 	 * @return simulatorObject
 	 */
-	public SimulatorObject getSimulatorObject() {
+	public Object getSimulatorObject() {
 		return simulatorObject;
 	}
 	
@@ -99,7 +99,7 @@ public class SimulationDescription
 			if(set.next())
 			{
 				this.ID = set.getInt(1);
-				this.simulatorObject = new SimulatorObject(set.getInt(2));
+				this.simulatorObject = new Object(set.getInt(2));
 				this.interval = set.getFloat(3);
 				this.timeStart = new Date(set.getLong(4));
 				this.timeEnd = new Date(set.getLong(5));

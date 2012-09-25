@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 //Objects used for simulations 
-public class SimulatorObject 
+public class Object 
 {
 	private int ID;
 	private String name;
@@ -61,7 +61,7 @@ public class SimulatorObject
 		return "\nName: "+name+"\nPower: "+this.effect+" W\nVoltage: "+voltage+" V\nCurrent: "+current+" A\n";
 	}
 	
-	public SimulatorObject(int id) throws ObjectNotFoundException
+	public Object(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
 		
