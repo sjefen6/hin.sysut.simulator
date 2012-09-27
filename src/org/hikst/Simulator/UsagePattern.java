@@ -8,9 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.text.DateFormatter;
 
 public class UsagePattern {
 	private int id;
@@ -18,8 +15,6 @@ public class UsagePattern {
 	private int[] pattern = new int[24];
 	private boolean actual;
 	private Calendar calendar;
-	
-	//TODO:
 	
 	public UsagePattern(int id) throws UsagePatternNotFoundException {
 		
@@ -67,7 +62,7 @@ public class UsagePattern {
 		this.name = name;
 	}
 
-	public int getProbability(Date time) {
+	public int getUsage(Date time) {
 		
 		calendar.setTime(time);
 		int hour  = calendar.get(Calendar.HOUR_OF_DAY);
@@ -100,5 +95,4 @@ public class UsagePattern {
 			
 		}
 	}
-
 }

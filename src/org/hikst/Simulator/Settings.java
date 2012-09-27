@@ -39,11 +39,11 @@ public class Settings {
 	 * Creates a default config file with blank properties.
 	 */
 	private void writeDefaultConfig(){
-		configFile.setProperty("DB_HOSTNAME", "");
-		configFile.setProperty("DB_PORT", "");
-		configFile.setProperty("DB_DB", "");
-		configFile.setProperty("DB_USER", "");
-		configFile.setProperty("DB_PW", "");
+		configFile.setProperty("DB_HOSTNAME", "localhost");
+		configFile.setProperty("DB_PORT", "5432");
+		configFile.setProperty("DB_DB", "db");
+		configFile.setProperty("DB_USER", "user");
+		configFile.setProperty("DB_PW", "password");
 		
 		try {
 			configFile.store(new FileWriter(file),null);
