@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SimulationRequest 
+public class QueueObjects 
 {
 	public static final String Request_Pending = "Pending";
 	public static final String Request_Finished = "Finished";
@@ -29,7 +29,7 @@ public class SimulationRequest
 	 * Creates a new simulation request from data given in the database at specified row id.
 	 * Throws exception if the row is null.
 	 */
-	public SimulationRequest(int id) throws ObjectNotFoundException
+	public QueueObjects(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
 		

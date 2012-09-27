@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CrawlerRequest
+public class CrawlerQueueObjects
 {
 	public static String Request_Pending = "Pending";
 	public static String Request_Processing = "Processing";
@@ -38,7 +38,7 @@ public class CrawlerRequest
 		return to;
 	}
 	
-	public CrawlerRequest(int id, int type, int latitude, int longitude,
+	public CrawlerQueueObjects(int id, int type, int latitude, int longitude,
 			Date from, Date to) {
 		super();
 		this.id = id;
@@ -49,7 +49,7 @@ public class CrawlerRequest
 		this.to = to;
 	}
 	
-	public CrawlerRequest(int id) throws CrawlerRequestNotFoundException
+	public CrawlerQueueObjects(int id) throws CrawlerRequestNotFoundException
 	{
 		Connection connection = Settings.getDBC();
 		

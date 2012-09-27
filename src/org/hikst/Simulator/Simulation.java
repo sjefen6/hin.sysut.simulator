@@ -5,14 +5,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.ArrayList;
-
-import javax.swing.text.DateFormatter;
 
 public class Simulation implements Runnable
 {
-	private SimulationRequest request;
+	private QueueObjects request;
 	private SimulationDescription description;
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
@@ -24,7 +21,7 @@ public class Simulation implements Runnable
 	 * 
 	 * Creates a new simulation on request
 	 */
-	public Simulation(SimulationRequest request)
+	public Simulation(QueueObjects request)
 	{
 		this.request = request;
 		
@@ -127,7 +124,7 @@ public class Simulation implements Runnable
 				
 				while(time.before(endTime))
 				{
-					int probability = usagePattern.getProbability(time);
+					int probability = usagePattern.getUsage(time);
 					
 					float simulatedEffect = (effect * (float)probability)/100.0f;
 					float simulatedCurrent = (current * (float)probability)/100.0f;
@@ -282,7 +279,7 @@ public class Simulation implements Runnable
 			
 			int statusId = statement.executeQuery().getInt(1);
 			
-			if(statusId == Status.getInstance().getStatusID(CrawlerRequest.Request_Finished))
+			if(statusId == Status.getInstance().getStatusID(CrawlerQueueObjects.Request_Finished))
 			{
 				return true;
 			}
@@ -331,7 +328,7 @@ public class Simulation implements Runnable
 			
 			int statusId = statement.executeQuery().getInt(1);
 			
-			if(statusId == Status.getInstance().getStatusID(SimulationRequest.Request_Finished))
+			if(statusId == Status.getInstance().getStatusID(QueueObjects.Request_Finished))
 			{
 				return true;
 			}
@@ -345,7 +342,7 @@ public class Simulation implements Runnable
 			System.out.println("Request\""+this.request.getID()+"\": Unable to check simulation dependencies");
 			ex.printStackTrace();
 		} catch (StatusIdNotFoundException e) {
-			System.out.println("Request\""+this.request.getID()+"\": No status id to the status \""+SimulationRequest.Request_Finished+"\" was found");
+			System.out.println("Request\""+this.request.getID()+"\": No status id to the status \""+QueueObjects.Request_Finished+"\" was found");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
