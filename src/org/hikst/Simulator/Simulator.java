@@ -60,8 +60,9 @@ public class Simulator {
 	 * TODO:
 	 * 
 	 * @param simulator_id
+	 * @return 
 	 */
-	public void doSimulations() {
+	public synchronized void doSimulations() {
 		System.out.println("Number of simulation threads running: "
 				+ Math.max(Thread.activeCount() - 2, 0));
 		int limit = Math.max(0,
