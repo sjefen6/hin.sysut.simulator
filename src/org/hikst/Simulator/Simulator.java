@@ -97,8 +97,8 @@ public class Simulator {
 
 	public void sleep() {
 		// sleep 10000 milliseconds
-		System.out.println("Waiting 1000 milliseconds...");
-		long sleepTime = 1000l;
+		// System.out.println("Waiting 1000 milliseconds...");
+		long sleepTime = 3000l;
 		try {
 			Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {
@@ -111,7 +111,7 @@ public class Simulator {
 		ArrayList<QueueObjects> requests = new ArrayList<QueueObjects>();
 
 		try {
-			System.out.println("Downloading...");
+			// System.out.println("Downloading...");
 			ArrayList<Integer> requestIDs = new ArrayList<Integer>();
 
 			int statusId = Status.getInstance().getStatusID(
@@ -142,7 +142,7 @@ public class Simulator {
 				}
 			}
 
-			System.out.println("Download successful");
+			// System.out.println("Download successful");
 
 		} catch (SQLException ex) {
 			System.out.println("Download failed");
@@ -157,7 +157,7 @@ public class Simulator {
 	}
 
 	private void validateSimulatorStatus() {
-		System.out.println("Validating simulator-status...");
+		// System.out.println("Validating simulator-status...");
 
 		ThreadGroup threadRoot = Thread.currentThread().getThreadGroup();
 
