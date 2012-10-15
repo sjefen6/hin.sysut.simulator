@@ -112,6 +112,14 @@ public class Simulation implements Runnable
 				float power_consumption = effect;
 				UsagePattern usagePattern = null;
 				
+				double latitude = simulatorObject.getLatitude();
+				double longitude = simulatorObject.getLongitude();
+				double self_temperature = simulatorObject.getSelfTemperature();
+				double target_temperature = simulatorObject.getTargetTemperature();
+				double base_area = simulatorObject.getBaseArea();
+				double base_height = simulatorObject.getBaseHeight();
+				double heat_loss_rate = simulatorObject.getHeatLossRate();
+				
 				try
 				{
 					usagePattern = getUsagePattern(simulatorObject.getID());	
