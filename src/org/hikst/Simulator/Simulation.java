@@ -70,7 +70,7 @@ public class Simulation implements Runnable
 			}
 		}
 		
-			//the things that interracts on the simulation like the weather and so forth..
+			//the things that interacts on the simulation like the weather and so forth..
 			ArrayList<ImpactFactor> impactFactors = description.getImpactFactors();
 		
 			Date startTime  = description.getTimeStart();

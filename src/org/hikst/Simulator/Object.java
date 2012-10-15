@@ -16,6 +16,13 @@ public class Object
 	private float current;
 	private int impact_degree_ID;
 	private int usage_pattern_ID;
+	private double latitude;
+	private double longitude;
+	private double self_temperature;
+	private double target_temperature;
+	private double base_area;
+	private double base_height;
+	private double heat_loss_rate;
 	private ArrayList<Integer> sons = new ArrayList<Integer>();
 	
 	public int getID() {
@@ -45,7 +52,35 @@ public class Object
 	public int getUsage_pattern_ID() {
 		return usage_pattern_ID;
 	}
-
+	
+	public double getLatitude(){
+		return latitude;
+	}
+	
+	public double getLongitude(){
+		return longitude;
+	}
+	
+	public double getSelfTemperature(){
+		return self_temperature;
+	}
+	
+	public double getTargetTemperature(){
+		return target_temperature;
+	}
+	
+	public double getBaseArea(){
+		return base_area;
+	}
+	
+	public double getBaseHeight(){
+		return base_height;
+	}
+	
+	public double getHeatLossRate(){
+		return heat_loss_rate;
+	}
+	
 	public ArrayList<Integer> getSons()
 	{
 		return sons;
@@ -80,6 +115,12 @@ public class Object
 				this.current = set.getFloat(5);
 				this.impact_degree_ID = set.getInt(6);
 				this.usage_pattern_ID = set.getInt(7);
+				this.longitude = set.getDouble(8);
+				this.latitude = set.getDouble(9);
+				this.self_temperature = set.getDouble(10);
+				this.target_temperature = set.getDouble(11);
+				this.base_area = set.getDouble(12);
+				this.base_height = set.getDouble(13);
 				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);
