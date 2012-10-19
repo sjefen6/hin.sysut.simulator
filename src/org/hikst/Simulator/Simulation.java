@@ -14,6 +14,8 @@ public class Simulation implements Runnable
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
 	
+	float placeholderforoutsidetemp = 12.0f; //Placeholder for outside temperature to be aquired from weather data											 
+											 // in later versions.
 	
 	//TODO: Fix comments
 	/***
@@ -112,13 +114,23 @@ public class Simulation implements Runnable
 				float power_consumption = effect;
 				UsagePattern usagePattern = null;
 				
-				double latitude = simulatorObject.getLatitude();
-				double longitude = simulatorObject.getLongitude();
-				double self_temperature = simulatorObject.getSelfTemperature();
-				double target_temperature = simulatorObject.getTargetTemperature();
-				double base_area = simulatorObject.getBaseArea();
-				double base_height = simulatorObject.getBaseHeight();
-				double heat_loss_rate = simulatorObject.getHeatLossRate();
+				float latitude = simulatorObject.getLatitude();
+				float longitude = simulatorObject.getLongitude();
+				float self_temperature = simulatorObject.getSelfTemperature();
+				float target_temperature = simulatorObject.getTargetTemperature();
+				float base_area = simulatorObject.getBaseArea();
+				float base_height = simulatorObject.getBaseHeight();
+				float heat_loss_rate = simulatorObject.getHeatLossRate();
+				
+				//If the object has a base area greater than zero and the inside temperature is higher than 
+				//the outside temperature, calculate the heating demand using the heating degree day formula
+				//before the usage pattern is applied.
+				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
+				{					
+					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/intervall;
+				}
+				
+				
 				
 				try
 				{
