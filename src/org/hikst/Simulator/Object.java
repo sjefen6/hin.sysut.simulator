@@ -11,18 +11,18 @@ public class Object
 {
 	private int ID;
 	private String name;
-	private float effect;
-	private float voltage;
-	private float current;
+	private double effect;
+	private double voltage;
+	private double current;
 	private int impact_degree_ID;
 	private int usage_pattern_ID;
-	private float latitude;
-	private float longitude;
-	private float self_temperature;
-	private float target_temperature;
-	private float base_area;
-	private float base_height;
-	private float heat_loss_rate;
+	private double latitude;
+	private double longitude;
+	private double self_temperature;
+	private double target_temperature;
+	private double base_area;
+	private double base_height;
+	private double heat_loss_rate;
 	private ArrayList<Integer> sons = new ArrayList<Integer>();
 	
 	public int getID() {
@@ -33,15 +33,15 @@ public class Object
 		return name;
 	}
 
-	public float getEffect() {
+	public double getEffect() {
 		return effect;
 	}
 	
-	public float getVoltage(){
+	public double getVoltage(){
 		return voltage;
 	}
 	
-	public float getCurrent(){
+	public double getCurrent(){
 		return current;
 	}
 	
@@ -53,31 +53,31 @@ public class Object
 		return usage_pattern_ID;
 	}
 	
-	public float getLatitude(){
+	public double getLatitude(){
 		return latitude;
 	}
 	
-	public float getLongitude(){
+	public double getLongitude(){
 		return longitude;
 	}
 	
-	public float getSelfTemperature(){
+	public double getSelfTemperature(){
 		return self_temperature;
 	}
 	
-	public float getTargetTemperature(){
+	public double getTargetTemperature(){
 		return target_temperature;
 	}
 	
-	public float getBaseArea(){
+	public double getBaseArea(){
 		return base_area;
 	}
 	
-	public float getBaseHeight(){
+	public double getBaseHeight(){
 		return base_height;
 	}
 	
-	public float getHeatLossRate(){
+	public double getHeatLossRate(){
 		return heat_loss_rate;
 	}
 	
@@ -110,17 +110,17 @@ public class Object
 			{
 				this.ID = set.getInt(1);
 				this.name = set.getString(2);
-				this.effect = set.getFloat(3);
-				this.voltage = set.getFloat(4);
-				this.current = set.getFloat(5);
+				this.effect = set.getDouble(3);
+				this.voltage = set.getDouble(4);
+				this.current = set.getDouble(5);
 				this.impact_degree_ID = set.getInt(6);
 				this.usage_pattern_ID = set.getInt(7);
-				this.longitude = set.getFloat(8);
-				this.latitude = set.getFloat(9);
-				this.self_temperature = set.getFloat(10);
-				this.target_temperature = set.getFloat(11);
-				this.base_area = set.getFloat(12);
-				this.base_height = set.getFloat(13);
+				this.longitude = set.getDouble(8);
+				this.latitude = set.getDouble(9);
+				this.self_temperature = set.getDouble(10);
+				this.target_temperature = set.getDouble(11);
+				this.base_area = set.getDouble(12);
+				this.base_height = set.getDouble(13);
 				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);
