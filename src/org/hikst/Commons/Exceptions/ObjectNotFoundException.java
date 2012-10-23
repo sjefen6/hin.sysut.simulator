@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Exceptions;
 
 public class ObjectNotFoundException extends Exception
 {

@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Datatypes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+
+import org.hikst.Commons.Exceptions.UsagePatternNotFoundException;
+import org.hikst.Commons.Services.Settings;
 
 public class UsagePattern {
 	private int id;

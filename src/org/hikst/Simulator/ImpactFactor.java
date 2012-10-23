@@ -13,6 +13,8 @@ import java.util.jar.JarEntry;
 
 import javax.print.attribute.standard.DateTimeAtCompleted;
 
+import org.hikst.Commons.Services.Settings;
+
 /**
  * TODO:
  */
