@@ -4,16 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
 
-import javax.print.attribute.standard.DateTimeAtCompleted;
-
-import org.hikst.Commons.Services.Settings;
+import org.hikst.Commons.Datatypes.*;
+import org.hikst.Commons.Datatypes.Object;
+import org.hikst.Commons.Exceptions.TypeIdNotFoundException;
+import org.hikst.Commons.JSON.*;
+import org.hikst.Commons.Services.*;
+import org.hikst.Commons.Statics.*;
 
 /**
  * TODO:
@@ -29,6 +32,7 @@ public class ImpactFactor
 	private String content;
 	
 	private Calendar calendar;
+	private Object theObject;
 	
 	//Variables for sun related factors
 	private Double sunLengthOfDay;
@@ -98,6 +102,10 @@ public class ImpactFactor
 				this.type_id = set.getInt(1);
 				this.content = set.getString(2);
 			}
+			
+			ImpactParser parser = new ImpactParser();
+			
+			parser.parseScale(type_id, content);
 		}
 		catch(SQLException ex)
 		{
@@ -201,17 +209,17 @@ public class ImpactFactor
 	 * 
 	 * @return temperatureElasticity
 	 */
-	public double getTemperatureElasticity()
+	public Double getTemperatureElasticity()
 	{
 		return temperatureElasticity;
 	}
 	
-	public double getTemperatureDD()
+	public Double getTemperatureDD()
 	{
 		return temperatureDD;
 	}
 	
-	public double getTemperatureHLC()
+	public Double getTemperatureHLC()
 	{
 		return temperatureHLC;
 	}
@@ -358,49 +366,91 @@ public class ImpactFactor
 		 * @param content
 		 * @return 
 		 */
-		public float parseScale(int type, String content)
+		public void parseScale(int type, String content)
 		{
-			//parse content here
-			switch(type)
-			{
-				case IMPACT_WEATHER:
-				{
-					return parseWeatherInformation(content);
+
+				try {
+					if( type == Type.getInstance().getTypeID("IMPACT_WEATHER"))
+					{
+						parseWeatherInformation(content);
+
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_BUILDING"))
+					{
+						
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_TEMPERATURE"))
+					{
+						
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_SUN"))
+					{
+
+					}
+					else
+					{
+
+					}
+				} catch (TypeIdNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				case IMPACT_TEMPERATURE:
-				{
-					
-				}
-				case IMPACT_SUN:
-				{
-					return parseSunlightInformation(content);
-				}
-				default:
-				{
-					return Float.NaN;
-				}
-			}
-			
+
 		}
+			
+		
 		
 		//TODO:
 		private float parseSunlightInformation(String content)
 		{
+			try {	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+								
+				setSunLengthOfDay(tempWD.getLatitude(), tempWD.getTimeSunrise());	
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			return Float.NaN;
 		}
 		
-		private float parseHLCInformation(String content)
+		//TODO
+		private void parseHLCInformation(String content)
 		{
-			return Float.NaN;
+			try {	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+				
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
+		//TODO
 		/**
 		 * @param content
 		 * @return Not-a-Number float value
 		 */
-		private float parseWeatherInformation(String content)
+		private void parseWeatherInformation(String content)
 		{
-			return Float.NaN;
+			try {	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+				
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();
+				
+
+			
+				
+				
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		
 	}
