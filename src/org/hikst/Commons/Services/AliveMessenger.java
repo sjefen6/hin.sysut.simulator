@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Services;
 
 /**
  * AliveMessenger
@@ -20,6 +20,10 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.hikst.Commons.Exceptions.StatusIdNotFoundException;
+import org.hikst.Commons.Statics.Status;
+import org.hikst.Simulator.Simulator;
 
 public class AliveMessenger implements Runnable {
 	private static AliveMessenger _instance = new AliveMessenger();;

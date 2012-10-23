@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.hikst.Commons.Services.Settings;
+
 public class CrawlerDependency 
 {
 	private ArrayList<Integer> crawlerDependencies = new ArrayList<Integer>();
