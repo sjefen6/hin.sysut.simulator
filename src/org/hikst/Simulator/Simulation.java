@@ -13,10 +13,15 @@ public class Simulation implements Runnable
 	private SimulationDescription description;
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
-//	private ImpactFactor impactFactor = new ImpactFactor();
+	private ArrayList <ImpactFactor> impactFactor;
+	
+	private final double hourlengthmillisecs = 3600000.0f; //Hour length is 3,6 million milliseconds. This is critical in order to properly
+														   //scale correct heating degree and heating requirement results when interval is
+														   //modified by the user.
 	
 	private double placeholderforoutsidetemp = 12.0f; //Placeholder for outside temperature to be aquired from weather data											 
-	private double tempHDD;										 // in later versions.
+													  //in later versions.
+	private double tempHDD;										 
 	
 	//TODO: Fix comments
 	/***
@@ -33,6 +38,7 @@ public class Simulation implements Runnable
 			this.description = new SimulationDescription(request.getSimulationDescriptionsID());
 			this.simulationDependency = new SimulationDependency(request.getID());
 			this.crawlerDependency = new CrawlerDependency(request.getID());
+			getImpactFactors(request.getSimulationDescriptionsID());
 		}
 		catch(ObjectNotFoundException ex)
 		{
@@ -126,16 +132,20 @@ public class Simulation implements Runnable
 				//If the object has a base area greater than zero and the inside temperature is higher than 
 				//the outside temperature, calculate the heating demand using the heating degree day formula
 				//before the usage pattern is applied.
-				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
-				{					
-					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/intervall;
-				}
-				
-				//Using the methods from ImpactFactor to calculate heating degree days
 //				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
-//				{
-//					tempHDD = setTemperatureDegreeDays(target_temperature, placeholderforoutsidetemp, placeholderforoutsidetemp, true);
+//				{					
+//					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/(hourlengthmillisecs/intervall);
 //				}
+				
+				//Using the methods from ImpactFactor to calculate heating degree days and calculate heating demand.
+				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
+				{
+					for (ImpactFactor temp : impactFactor)
+					{
+					tempHDD = temp.getTemperatureDD();
+					}
+					effect = (base_area * heat_loss_rate * tempHDD)/(hourlengthmillisecs/intervall);
+				}
 				
 				try
 				{
@@ -395,5 +405,24 @@ public class Simulation implements Runnable
 			System.out.println("Request\""+this.request.getID()+"\": Unable to save result");
 			e.printStackTrace();
 		}
-	}	
+	}
+	
+	private void getImpactFactors(int id)
+	{
+		Connection connection = Settings.getDBC();
+		
+		String query = "select Impact_Factor_ID from Impact_Factors_In_Simulation where Sim_Description_ID=?";
+		PreparedStatement statement;
+		try
+			{
+			statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
+			statement.executeQuery();
+			}
+		catch (SQLException e)
+			{			
+			e.printStackTrace();
+			}
+		
+	}
 }
