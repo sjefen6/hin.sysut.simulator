@@ -30,6 +30,7 @@ public class ImpactFactor
 
 	private int type_id;
 	private String content;
+	private Date currentTime;
 	
 	private Calendar calendar;
 	private Object theObject;
@@ -84,9 +85,10 @@ public class ImpactFactor
 	
 	
 	
-	public ImpactFactor(int id)
+	public ImpactFactor(int id, Date time)
 	{
 		calendar = new GregorianCalendar();
+		currentTime = time;
 		
 		Connection connection = Settings.getDBC();
 		
@@ -112,6 +114,13 @@ public class ImpactFactor
 			ex.printStackTrace();
 		}
 	}
+	
+	public void setCurrentTime(Date time)
+	{
+		currentTime = time;
+		setSunSunlight();
+	}
+	
 	
 	//----------------------------
 	// Methods related to the sun
@@ -162,7 +171,7 @@ public class ImpactFactor
 	public void setSunSunlight()
 	{
 		if(sunDate != null){
-			calendar.setTime(sunDate);
+			calendar.setTime(currentTime);
 			double tempHours = getSunLengthOfDay();
 			double tempTime = sunDate.getHours() + TimeUnit.MINUTES.toHours(sunDate.getMinutes());
 			
@@ -178,6 +187,20 @@ public class ImpactFactor
 				}
 			}
 		}		
+		else
+			sunLight = false;
+	}
+	
+	public void setSunSunlight(Date sunrise, Date sundown)
+	{
+		double tempRise, tempDown, tempCurrent;
+		
+		tempRise = sunrise.getHours() + TimeUnit.MINUTES.toHours(sunrise.getMinutes());
+		tempDown = sundown.getHours() + TimeUnit.MINUTES.toHours(sundown.getMinutes());
+		tempCurrent = currentTime.getHours() + TimeUnit.MINUTES.toHours(currentTime.getMinutes());
+		
+		if (tempCurrent > tempRise && tempCurrent < tempDown)
+			sunLight = true;			
 		else
 			sunLight = false;
 	}
@@ -356,7 +379,7 @@ public class ImpactFactor
 	}
 	
 	/**
-	 *	TODO:
+	 * Internal parser class which parses the content read from the database.
 	 */
 	private class ImpactParser
 	{
@@ -381,7 +404,7 @@ public class ImpactFactor
 					}
 					else if( type == Type.getInstance().getTypeID("IMPACT_TEMPERATURE"))
 					{
-						
+						parseHLCInformation(content);
 					}
 					else if( type == Type.getInstance().getTypeID("IMPACT_SUN"))
 					{
@@ -397,22 +420,19 @@ public class ImpactFactor
 				}
 
 		}
-			
 		
-		
-		//TODO:
-		private float parseSunlightInformation(String content)
+		//TODO: Endres slik at den henter tiden hvor simuleringen pågår.
+		private void parseSunlightInformation(String content)
 		{
 			try {	
 				WeatherData tempWD = new WeatherData(new JSONObject(content));
 								
 				setSunLengthOfDay(tempWD.getLatitude(), tempWD.getTimeSunrise());	
+				//TODO: get current time somehow.
+				setSunSunlight(tempWD.getTimeSunrise(), tempWD.getTimeSunset());
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			return Float.NaN;
 		}
 		
 		//TODO
@@ -423,13 +443,13 @@ public class ImpactFactor
 				
 				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
 				
+				
+				
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-		//TODO
 		/**
 		 * @param content
 		 * @return Not-a-Number float value
@@ -441,13 +461,7 @@ public class ImpactFactor
 				
 				ArrayList<Forecast> tempCast = tempWD.getForecasts();
 				
-
-			
-				
-				
-				
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

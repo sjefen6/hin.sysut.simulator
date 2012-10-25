@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.hikst.Commons.Exceptions.ObjectNotFoundException;
+import org.hikst.Commons.JSON.JSONArray;
+import org.hikst.Commons.JSON.JSONException;
+import org.hikst.Commons.JSON.JSONObject;
 import org.hikst.Commons.Services.Settings;
 
 //Objects used for simulations 
@@ -26,6 +29,11 @@ public class Object
 	private double base_area;
 	private double base_height;
 	private double heat_loss_rate;
+	
+	//TODO: implement in database
+	private Integer energy_class_id;
+	private Integer bulding_type_id;
+	
 	private ArrayList<Integer> sons = new ArrayList<Integer>();
 	
 	public int getID() {
@@ -84,6 +92,16 @@ public class Object
 		return heat_loss_rate;
 	}
 	
+	public int getEnergyClassId()
+	{
+		return energy_class_id;
+	}
+	
+	public int getBuildingTypeId()
+	{
+		return bulding_type_id;
+	}
+	
 	public ArrayList<Integer> getSons()
 	{
 		return sons;
@@ -98,6 +116,50 @@ public class Object
 	{
 		return "\nName: "+name+"\nPower: "+this.effect+" W\nVoltage: "+voltage+" V\nCurrent: "+current+" A\n";
 	}
+	
+	public JSONObject toJSONObject()
+	{
+		JSONObject jsonObject = new JSONObject();
+		
+		try 
+		{
+			jsonObject.put("id", ID);
+			jsonObject.put("name", name);
+			jsonObject.put("effect", effect);
+			jsonObject.put("voltage", voltage);
+			jsonObject.put("current", current);
+			jsonObject.put("impact_degree_ID", impact_degree_ID);
+			jsonObject.put("usage_pattern_ID", usage_pattern_ID);
+			jsonObject.put("latitude", latitude);
+			jsonObject.put("longitude", longitude);
+			jsonObject.put("self_temperature", self_temperature);
+			jsonObject.put("target_temperature", target_temperature);
+			jsonObject.put("base_area", base_area);
+			jsonObject.put("base_height", base_height);
+			jsonObject.put("heat_loss_rate", heat_loss_rate);
+			jsonObject.put("energy_class_id", energy_class_id);
+			jsonObject.put("bulding_type_id", bulding_type_id);
+
+			if (hasSons())
+			{
+				JSONArray tempArray = new JSONArray();
+				
+				for (int i = 0; i < sons.size() - 1; i++)
+				{
+					tempArray.put(sons.get(i));
+				}
+				
+				jsonObject.put("sons", tempArray);
+			}
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return jsonObject;
+	}
+	
 	
 	public Object(int id) throws ObjectNotFoundException
 	{

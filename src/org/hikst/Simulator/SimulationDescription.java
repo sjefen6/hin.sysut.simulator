@@ -117,7 +117,7 @@ public class SimulationDescription
 				{
 					int impact_factor_id = anotherSet.getInt(1);
 					
-					this.impactFactors.add(new ImpactFactor(impact_factor_id));
+					this.impactFactors.add(new ImpactFactor(impact_factor_id, timeStart));
 				}
 			}
 			else
