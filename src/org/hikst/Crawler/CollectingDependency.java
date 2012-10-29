@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Crawler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,34 +8,35 @@ import java.util.ArrayList;
 
 import org.hikst.Commons.Services.Settings;
 
-public class SimulationDependency 
+public class CollectingDependency
 {
-	private ArrayList<Integer> dependencies = new ArrayList<Integer>();
+	private ArrayList<Integer> crawlerDependencies = new ArrayList<Integer>();
 	
-	public ArrayList<Integer> getDependencies() {
-		return dependencies;
+	public ArrayList<Integer> getCrawlerDependencies() {
+		return crawlerDependencies;
 	}
 
-	public SimulationDependency(int Simulator_Queue_Object_ID)
+	public CollectingDependency(int Simulator_Queue_Object_ID)
 	{
 		Connection connection = Settings.getDBC();
 		
 		try
 		{
-			String query = "SELECT Son_ID FROM Simulation_Dependency WHERE Father_ID=?;";
+			String query = "SELECT Crawler_Queue_ID, Sim_Queue_ID FROM Crawler_Dependency WHERE Sim_Queue_ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, Simulator_Queue_Object_ID);
 			ResultSet set = statement.executeQuery();
 			
 			while(set.next())
 			{
-				int Son_ID = set.getInt(1);
-				dependencies.add(Son_ID);
+				int Crawler_Queue_ID = set.getInt(1);
+				
+				crawlerDependencies.add(Crawler_Queue_ID);
 			}
 		}
 		catch(SQLException ex)
 		{
-			
+			ex.printStackTrace();
 		}
 	}
 }

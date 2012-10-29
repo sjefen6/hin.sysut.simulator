@@ -1,28 +1,27 @@
-package org.hikst.Simulator;
+package org.hikst.Crawler;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hikst.Commons.Exceptions.CrawlerRequestNotFoundException;
+import org.hikst.Commons.Exceptions.CollectorRequestNotFoundException;
 import org.hikst.Commons.Exceptions.StatusIdNotFoundException;
 import org.hikst.Commons.Services.Settings;
 import org.hikst.Commons.Statics.Status;
 
-public class CrawlerQueueObjects
+public class CollectingRequest implements Runnable
 {
 	public static String Request_Pending = "Pending";
 	public static String Request_Processing = "Processing";
 	public static String Request_Finished = "Finished";
 	
-	int id;
-	int type;
-	int latitude;
-	int longitude;
-	java.util.Date from;
-	java.util.Date to;
+	private int id;
+	private int type;
+	private int latitude;
+	private int longitude;
+	private java.util.Date from;
+	private java.util.Date to;
 	
 	public int getId() {
 		return id;
@@ -43,18 +42,18 @@ public class CrawlerQueueObjects
 		return to;
 	}
 	
-	public CrawlerQueueObjects(int id, int type, int latitude, int longitude,
-			Date from, Date to) {
+	public CollectingRequest(int id, int type, int latitude, int longitude,
+			java.util.Date time_from, java.util.Date time_to) {
 		super();
 		this.id = id;
 		this.type = type;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.from = from;
-		this.to = to;
+		this.from = time_from;
+		this.to = time_to;
 	}
 	
-	public CrawlerQueueObjects(int id) throws CrawlerRequestNotFoundException
+	public CollectingRequest(int id) throws CollectorRequestNotFoundException
 	{
 		Connection connection = Settings.getDBC();
 		
@@ -76,7 +75,7 @@ public class CrawlerQueueObjects
 			}
 			else
 			{
-				throw new CrawlerRequestNotFoundException();
+				throw new CollectorRequestNotFoundException();
 			}
 		}catch(SQLException ex)
 		{
@@ -92,7 +91,7 @@ public class CrawlerQueueObjects
 			
 			int statusID = Status.getInstance().getStatusID(Request_Processing);
 			
-			String query = "UPDATE TABLE Simulator_Queue_Objects SET Status_ID=? WHERE ID=?";
+			String query = "UPDATE TABLE crawler_queue_bjects SET status_id=? WHERE id=?";
 			
 			PreparedStatement statement =  connection.prepareStatement(query);
 			statement.setInt(1, statusID);
@@ -132,5 +131,17 @@ public class CrawlerQueueObjects
 		{
 			ex.printStackTrace();
 		}
+	}
+	
+	public void collect()
+	{
+		
+	}
+	
+	public void run()
+	{
+		this.setStatusToProcessing();
+		collect();
+		this.setStatusToFinished();
 	}
 }

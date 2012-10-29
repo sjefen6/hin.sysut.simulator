@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.hikst.Commons.Exceptions.ObjectNotFoundException;
+import org.hikst.Commons.Exceptions.StatusIdNotFoundException;
+import org.hikst.Commons.Services.AliveMessenger;
+import org.hikst.Commons.Services.Settings;
+import org.hikst.Commons.Statics.Status;
+
 public class Simulator {
 	public static final String Simulator_Work_Status_High = "High";
 	public static final String Simulator_Work_Status_Medium = "Medium";
@@ -60,8 +66,9 @@ public class Simulator {
 	 * TODO:
 	 * 
 	 * @param simulator_id
+	 * @return 
 	 */
-	public void doSimulations() {
+	public synchronized void doSimulations() {
 		System.out.println("Number of simulation threads running: "
 				+ Math.max(Thread.activeCount() - 2, 0));
 		int limit = Math.max(0,

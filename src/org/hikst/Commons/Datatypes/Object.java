@@ -1,10 +1,13 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Datatypes;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import org.hikst.Commons.Exceptions.ObjectNotFoundException;
+import org.hikst.Commons.Services.Settings;
 
 //Objects used for simulations 
 public class Object 

@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Services;
 
 /**
  * AliveMessenger
@@ -14,8 +14,6 @@ package org.hikst.Simulator;
  * }
  */
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -23,14 +21,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.AbstractAction;
-import javax.swing.Timer;
+import org.hikst.Commons.Exceptions.StatusIdNotFoundException;
+import org.hikst.Commons.Statics.Status;
+import org.hikst.Simulator.Simulator;
 
-@SuppressWarnings("serial")
-public class AliveMessenger extends AbstractAction {
-	private static AliveMessenger _instance = new AliveMessenger();
+public class AliveMessenger implements Runnable {
+	private static AliveMessenger _instance = new AliveMessenger();;
 	private final int INTERVAL = 60000;
 	private int status_id;
+	private long lastTimeRun;
+	private static Thread messenger;
+	
 
 	private AliveMessenger() {
 		// Status can not be null. Assuming this is set before any simulations has started, therefor load = low
@@ -41,10 +42,9 @@ public class AliveMessenger extends AbstractAction {
 			// I am a vengeful bitch
 			System.exit(0);
 		}
-		// Make sure update is run once before the timer starts
-		update();
-		// Start updating status on an INTERVAL
-		new Timer(INTERVAL, (ActionListener) this).start();
+		
+		messenger = new Thread(this);
+		messenger.start();
 	}
 	
 	// Returning the singleton
@@ -52,13 +52,7 @@ public class AliveMessenger extends AbstractAction {
         return _instance;
     }
 
-    // Overriding for timer
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		update();
-	}
-
-	// Returns the current external ip determend by a 3rd party.
+	// Returns the current external ip determined by a 3rd party.
 	private String getIp() {
 		try {
 			URL url = new URL("http://ip.goldclone.no/");
@@ -113,5 +107,24 @@ public class AliveMessenger extends AbstractAction {
 	
 	public void setStatus(String status) throws StatusIdNotFoundException{
 		status_id = Status.getInstance().getStatusID(status);
+	}
+
+	@Override
+	public void run() {
+		while(true){
+			lastTimeRun = System.currentTimeMillis();
+			update();
+//			System.out.println("Update took " + (System.currentTimeMillis() - lastTimeRun) + "ms");
+			sleep(INTERVAL - (System.currentTimeMillis() - lastTimeRun));
+		}
+	}
+
+	private void sleep(long l) {
+		try {
+			Thread.sleep(l);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package org.hikst.Simulator;
+package org.hikst.Commons.Services;
 
 import java.io.File;
 import java.io.FileReader;
@@ -146,5 +146,36 @@ public class Settings {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Gets this Collector's ID.
+	 * 
+	 * @return The result given from the configFile. If this is a new simulator,
+	 *         a simulator without ID, it will return -1.
+	 */
+	public static int getCollectorID() {
+		int result;
+		try {
+			result = Integer.parseInt(configFile.getProperty("COLLECTOR_ID"));
+		} catch (NumberFormatException ex) {
+			return -1;
+		}
+		return result;
+	}
 
+	/**
+	 * Sets this Collector's ID. Will only be called by the AliveMessenger class
+	 * after the first reporting.
+	 * 
+	 * @param id
+	 *            The ID given to the simulator instance by the database.
+	 */
+	public static void setCollectorID(int id) {
+		configFile.setProperty("COLLECTOR_ID", Integer.toString(id));
+		try {
+			configFile.store(new FileWriter(file), null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
