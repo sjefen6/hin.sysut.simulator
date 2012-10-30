@@ -559,7 +559,7 @@ public class ImpactFactor
 					}
 					else if( type == Type.getInstance().getTypeID("IMPACT_TEMPERATURE"))
 					{
-						
+						parseTemperatureInformation(content);
 					}
 					else if( type == Type.getInstance().getTypeID("IMPACT_SUN"))
 					{
