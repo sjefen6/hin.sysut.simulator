@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.hikst.Commons.Datatypes.*;
 import org.hikst.Commons.Datatypes.Object;
-import org.hikst.Commons.Exceptions.TypeIdNotFoundException;
+import org.hikst.Commons.Exceptions.*;
 import org.hikst.Commons.JSON.*;
 import org.hikst.Commons.Services.*;
 import org.hikst.Commons.Statics.*;
@@ -570,7 +570,6 @@ public class ImpactFactor
 		/**
 		 * @param type
 		 * @param content
-		 * @return 
 		 */
 		public void parseScale(int type, String content)
 		{

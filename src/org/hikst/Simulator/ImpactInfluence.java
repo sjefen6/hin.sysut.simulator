@@ -9,7 +9,7 @@ public class ImpactInfluence {
 	public static String Current_Infuence = "Current";
 	
 	//Indirect influences
-	public static String Usage_Possebilety_Infuence = "Usage_Possebilety";
+	public static String Usage_Possibility_Infuence = "Usage_Possibility";
 	
 	private String Influence;
 	private double Degree;
