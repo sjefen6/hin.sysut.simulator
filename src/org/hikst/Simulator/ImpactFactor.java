@@ -4,20 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
 
-import javax.print.attribute.standard.DateTimeAtCompleted;
+import org.hikst.Commons.Datatypes.*;
+import org.hikst.Commons.Datatypes.Object;
+import org.hikst.Commons.Exceptions.TypeIdNotFoundException;
+import org.hikst.Commons.JSON.*;
+import org.hikst.Commons.Services.*;
+import org.hikst.Commons.Statics.*;
 
-import org.hikst.Commons.Services.Settings;
-
-/**
- * TODO:
- */
 public class ImpactFactor 
 {
 	public static final int IMPACT_SUN = 0;
@@ -27,8 +27,10 @@ public class ImpactFactor
 
 	private int type_id;
 	private String content;
+	private Date currentTime;
 	
 	private Calendar calendar;
+	private Object theObject;			//unsure if it's needed
 	
 	//Variables for sun related factors
 	private Double sunLengthOfDay;
@@ -36,19 +38,23 @@ public class ImpactFactor
 	private Date sunDate;
 	
 	//Variables and constants related to temperatures and building type
-	private double temperatureElasticity;
-	private double temperatureReal;
-	private double temperatureExpected;
-	private double temperatureAverage;
-	private double temperatureMin;
-	private double temperatureMax;
-	private double temperatureDD;
-	private double temperatureHLC;		//temperature heat-loss coefficency
+	private Double temperatureElasticity;
+	private Double temperatureAverage;	//average temperature given in the forecasts
+	private Double temperatureMin;		//min temperature given in the forecasts
+	private Double temperatureMax;		//max temperature given in the forecasts 
+	private Double temperatureDD;		//temperature degree days
+	private Float temperatureHLC;		//temperature heat-loss coefficency
+	private Double temperatureBase;		//desired temperature for object in this impact factor.
+	private boolean temperatureHeat;	//TODO: implement
 	public static final double temperatureBaseResidential = 18.0;
 	public static final double temperatureBaseOffice = 15.0;
 	public static final double temperatureBaseIndustry = 15.0;
 	
-	//TODO: http://www.vesma.com/ddd/index.htm
+	private Double weatherTemperature;
+	private Double weatherWindSpeed;
+	private Double weatherEffectiveTemperature;
+	private Double weatherhPa;	
+	// http://www.vesma.com/ddd/index.htm
 	
 	/**
 	 * Identifier for energy class A, 
@@ -78,8 +84,11 @@ public class ImpactFactor
 	public static final int ENERGY_BUILDINGTYPE_HOUSE = 110;
 	public static final int ENERGY_BUILDINGTYPE_BLOCK = 111;
 	
-	
-	
+	/**
+	 * Basic constructor for ImpactFactor, where only database id is given
+	 * 
+	 * 	@param id The id in the database of which this impact factor is found
+	 */
 	public ImpactFactor(int id)
 	{
 		calendar = new GregorianCalendar();
@@ -98,12 +107,138 @@ public class ImpactFactor
 				this.type_id = set.getInt(1);
 				this.content = set.getString(2);
 			}
+			
+			ImpactParser parser = new ImpactParser();
+			
+			parser.parseScale(type_id, content);
 		}
 		catch(SQLException ex)
 		{
 			ex.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 	Constructor for ImpactFactor where the current time in simulation is given
+	 * 
+	 * 	@param id The id in the database of which this impact factor is found
+	 * 	@param time The time of which this impact factor is used in the simulation, given with a Date	
+	 */
+	public ImpactFactor(int id, Date time)
+	{
+		calendar = new GregorianCalendar();
+		currentTime = time;
+		
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1,id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				this.type_id = set.getInt(1);
+				this.content = set.getString(2);
+			}
+			
+			ImpactParser parser = new ImpactParser();
+			
+			parser.parseScale(type_id, content);
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 	Constructor for ImpactFactor where the desired base temperature is given
+	 * 
+	 * 	@param id The id in the database of which this impact factor is found
+	 * 	@param baseTemp The desired temperature given to the object that uses this impactfactor.
+	 */
+	public ImpactFactor(int id, double baseTemp)
+	{
+		calendar = new GregorianCalendar();
+		temperatureBase = baseTemp;
+		
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1,id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				this.type_id = set.getInt(1);
+				this.content = set.getString(2);
+			}
+			
+			ImpactParser parser = new ImpactParser();
+			
+			parser.parseScale(type_id, content);
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 	Constructor for ImpactFactor where the desired base temperature and simulation time is given
+	 * 
+	 * 	@param id The id in the database of which this impact factor is found
+	 * 	@param baseTemp The desired temperature given to the object that uses this impactfactor.
+	 * 	@param time The time of which this impact factor is used in the simulation, given with a Date	 
+	 */
+	public ImpactFactor(int id, double baseTemp, Date time)
+	{
+		calendar = new GregorianCalendar();
+		temperatureBase = baseTemp;
+		currentTime = time;
+		
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1,id);
+			ResultSet set = statement.executeQuery();
+			
+			if(set.next())
+			{
+				this.type_id = set.getInt(1);
+				this.content = set.getString(2);
+			}
+			
+			ImpactParser parser = new ImpactParser();
+			
+			parser.parseScale(type_id, content);
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sets the current time and then checks if the sun is up at the given time.
+	 * 
+	 * @param time Current time.
+	 */
+	public void setCurrentTime(Date time)
+	{
+		currentTime = time;
+		setSunSunlight();
+	}
+	
 	
 	//----------------------------
 	// Methods related to the sun
@@ -154,7 +289,7 @@ public class ImpactFactor
 	public void setSunSunlight()
 	{
 		if(sunDate != null){
-			calendar.setTime(sunDate);
+			calendar.setTime(currentTime);
 			double tempHours = getSunLengthOfDay();
 			double tempTime = sunDate.getHours() + TimeUnit.MINUTES.toHours(sunDate.getMinutes());
 			
@@ -174,6 +309,34 @@ public class ImpactFactor
 			sunLight = false;
 	}
 	
+	public void setSunSunlight(Date sunrise, Date sundown)
+	{
+		double tempRise, tempDown, tempCurrent;
+		
+		tempRise = sunrise.getHours() + TimeUnit.MINUTES.toHours(sunrise.getMinutes());
+		tempDown = sundown.getHours() + TimeUnit.MINUTES.toHours(sundown.getMinutes());
+		tempCurrent = currentTime.getHours() + TimeUnit.MINUTES.toHours(currentTime.getMinutes());
+		
+		if (tempCurrent > tempRise && tempCurrent < tempDown)
+			sunLight = true;			
+		else
+			sunLight = false;
+	}
+	
+	public void setSunSunlight(Date sunrise, Date sundown, Date currentTime)
+	{
+		double tempRise, tempDown, tempCurrent;
+		
+		tempRise = sunrise.getHours() + TimeUnit.MINUTES.toHours(sunrise.getMinutes());
+		tempDown = sundown.getHours() + TimeUnit.MINUTES.toHours(sundown.getMinutes());
+		tempCurrent = currentTime.getHours() + TimeUnit.MINUTES.toHours(currentTime.getMinutes());
+		
+		if (tempCurrent > tempRise && tempCurrent < tempDown)
+			sunLight = true;			
+		else
+			sunLight = false;
+	}
+	
 	/**
 	 * Get method for sunlight
 	 * 
@@ -189,7 +352,26 @@ public class ImpactFactor
 	// weather factor
 	//----------------------------
 	
-	//TODO:
+	public Double getEffectiveTemperature()
+	{
+		return weatherEffectiveTemperature;
+	}
+	
+	/**
+	 * Sets the effective temperature given temperature, humidity and windspeed in celcius, hPa and m/s
+	 * 
+	 * http://en.wikipedia.org/wiki/Wind_chill#Australian_Apparent_Temperature
+	 * May need to be changed
+	 * 
+	 * @param temperature The guaged temperature
+	 * @param humidity The humidity in the air
+	 * @parm windspeed The windspeed given in meters per second.
+	 */
+	public void setEffectiveTemperature(double temperature, double humidity, double windspeed)
+	{
+		weatherEffectiveTemperature = temperature + 0.33*humidity - 0.70*windspeed - 4.00; 
+	}
+	
 	
 	//----------------------------
 	// Methods related to the 
@@ -201,21 +383,44 @@ public class ImpactFactor
 	 * 
 	 * @return temperatureElasticity
 	 */
-	public double getTemperatureElasticity()
+	public Double getTemperatureElasticity()
 	{
 		return temperatureElasticity;
 	}
 	
-	public double getTemperatureDD()
+	public Double getTemperatureDD()
 	{
 		return temperatureDD;
 	}
 	
-	public double getTemperatureHLC()
+	public Float getTemperatureHLC()
 	{
 		return temperatureHLC;
 	}
 	
+	public Double getTemperatureAverage()
+	{
+		if (temperatureAverage != null)
+			return temperatureAverage;
+		else 
+			return Double.NaN;
+	}
+	
+	public Double getTemperatureMax()
+	{
+		if (temperatureMax != null)
+			return temperatureMax;
+		else 
+			return Double.NaN;
+	}
+	
+	public Double getTemperatureMin()
+	{
+		if (temperatureMin != null)
+			return temperatureMin;
+		else 
+			return Double.NaN;
+	}
 	/**
 	 * Sets the heat-loss coefficency for a house or blockhouse with given
 	 * energy class. Will generate a random coefficency within the energy
@@ -224,7 +429,7 @@ public class ImpactFactor
 	 * @param bhid Building class identifier
 	 * @param btid Building type identifier
 	 */
-	private void setTemperatureHeatLossCoefficency(int bhid, int btid)
+	public void setTemperatureHeatLossCoefficency(int bhid, int btid)
 	{
 		float tempbh;
 		Random tempr = new Random();
@@ -283,11 +488,20 @@ public class ImpactFactor
 		{
 			tempbh = Float.NaN;
 		}
-		temperatureHLC = (double)tempbh;
+		temperatureHLC = tempbh;
+	}
+
+	public void setTemperatureHeatLossCoefficency(float hlc)
+	{
+		temperatureHLC = hlc;
 	}
 	
+	//TODO: get HLC from database
+	public void setTemperatureHeatLossCoefficency(int id)
+	{
+		
+	}
 	
-	//TODO: Refine and define to work properly. There are expected bugs in this method
 	/**
 	 * Finds the Degree Days given.
 	 * 
@@ -305,13 +519,13 @@ public class ImpactFactor
 	 */
 	private void setTemperatureDegreeDays(double base, double min, double max, boolean heat)
 	{
-		temperatureMax = max;
-		temperatureMin = min;
+//		temperatureMax = max;
+//		temperatureMin = min;
 		if(heat)
 		{
 			if(min > base)
 			{
-				temperatureDD = 0;
+				temperatureDD = 0.0;
 			}
 			else if((min + max)/2 > base)
 			{
@@ -330,7 +544,7 @@ public class ImpactFactor
 		{
 			if(max < base)
 			{
-				temperatureDD = 0;
+				temperatureDD = 0.0;
 			}
 			else if((max + min)/2 < base)
 			{
@@ -348,7 +562,7 @@ public class ImpactFactor
 	}
 	
 	/**
-	 *	TODO:
+	 * Internal parser class which parses the content read from the database.
 	 */
 	private class ImpactParser
 	{
@@ -358,49 +572,165 @@ public class ImpactFactor
 		 * @param content
 		 * @return 
 		 */
-		public float parseScale(int type, String content)
+		public void parseScale(int type, String content)
 		{
-			//parse content here
-			switch(type)
+
+				try 
+				{
+					if( type == Type.getInstance().getTypeID("IMPACT_WEATHER"))
+					{
+						parseWeatherInformation(content);
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_BUILDING"))
+					{
+						parseHLCInformation(content);
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_TEMPERATURE"))
+					{
+						parseTemperatureInformation(content);
+					}
+					else if( type == Type.getInstance().getTypeID("IMPACT_SUN"))
+					{
+						parseSunlightInformation(content);
+					}
+					else
+					{
+						
+					}
+				} 
+				catch (TypeIdNotFoundException e) 
+				{
+					e.printStackTrace();
+				}
+
+		}
+		
+		private void parseSunlightInformation(String content)
+		{
+			try 
+			{	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+								
+				setSunLengthOfDay(tempWD.getLatitude(), tempWD.getTimeSunrise());	
+				
+				if(currentTime != null)
+					setSunSunlight(tempWD.getTimeSunrise(), tempWD.getTimeSunset(), currentTime);
+				else
+					setSunSunlight(tempWD.getTimeSunrise(), tempWD.getTimeSunset());
+			} 
+			catch (JSONException e) 
 			{
-				case IMPACT_WEATHER:
-				{
-					return parseWeatherInformation(content);
-				}
-				case IMPACT_TEMPERATURE:
-				{
-					
-				}
-				case IMPACT_SUN:
-				{
-					return parseSunlightInformation(content);
-				}
-				default:
-				{
-					return Float.NaN;
-				}
+				e.printStackTrace();
+			} 
+			// Hvis currentTime ikke er definert:
+			catch (NullPointerException e)
+			{
+				e.printStackTrace();
 			}
-			
 		}
 		
-		//TODO:
-		private float parseSunlightInformation(String content)
+		//TODO: Fix this parser
+		private void parseHLCInformation(String content)
 		{
-			return Float.NaN;
+			try 
+			{	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+				
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
+				
+				
+				
+			} 
+			catch (JSONException e) 
+			{
+				e.printStackTrace();
+			}
 		}
 		
-		private float parseHLCInformation(String content)
+		private void parseTemperatureInformation(String content)
 		{
-			return Float.NaN;
+			try 
+			{	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
+				
+				double tempMax, tempMin, tempAverage = 0;
+				
+				tempMax = tempMin = tempCast.get(0).getTemperatureValue();
+				
+				for(Forecast f: tempCast)
+				{
+					if (f.getTemperatureValue() > tempMax)
+						tempMax = f.getTemperatureValue();
+					if (f.getTemperatureValue() < tempMin)
+						tempMin = f.getTemperatureValue();
+					
+					tempAverage += f.getTemperatureValue();
+				}
+								
+				temperatureMin = tempMin;
+				temperatureMax = tempMax;
+				temperatureAverage = tempAverage / tempCast.size();
+				
+				//TODO: Fix the boolean input here to let the user specify if heating or cooling.
+				setTemperatureDegreeDays(temperatureBase, temperatureMin, temperatureMax, true);
+			} 
+			catch (JSONException e) 
+			{
+				e.printStackTrace();
+			}
+			catch (NullPointerException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		/**
 		 * @param content
-		 * @return Not-a-Number float value
 		 */
-		private float parseWeatherInformation(String content)
+		private void parseWeatherInformation(String content)
 		{
-			return Float.NaN;
+			try 
+			{	
+				WeatherData tempWD = new WeatherData(new JSONObject(content));
+				
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();
+				
+				double tempMax, tempMin, tempAverage = 0;
+				
+				tempMax = tempMin = tempCast.get(0).getTemperatureValue();
+				
+				for(Forecast f: tempCast)
+				{
+					if (f.getTemperatureValue() > tempMax)
+						tempMax = f.getTemperatureValue();
+					if (f.getTemperatureValue() < tempMin)
+						tempMin = f.getTemperatureValue();
+					
+					tempAverage += f.getTemperatureValue();
+					
+					if(f.getFrom().getTime() < currentTime.getTime() && f.getTo().getTime() > currentTime.getTime())
+					{
+						weatherTemperature = f.getTemperatureValue();
+						weatherWindSpeed = f.getWindspeedValue();
+						weatherhPa = f.getPressureValue();
+						
+						weatherEffectiveTemperature = weatherTemperature + 0.33*weatherhPa - 0.70*weatherWindSpeed - 4.00; 
+					}
+				}
+				
+				tempAverage = tempAverage / tempCast.size();
+				
+			} 
+			catch (JSONException e) 
+			{
+				e.printStackTrace();
+			} 
+			catch (NullPointerException e)
+			{
+				e.printStackTrace();
+			}
+			
 		}
 		
 	}

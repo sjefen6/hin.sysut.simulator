@@ -20,7 +20,7 @@ public class Settings {
 	 * Constructor that creates a default name for the file.
 	 */
 	public Settings(){
-		this("Simulator.properties");
+		this("hikst.properties");
 	}
 	
 	/**
