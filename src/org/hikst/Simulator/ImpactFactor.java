@@ -30,7 +30,7 @@ public class ImpactFactor
 	private Date currentTime;
 	
 	private Calendar calendar;
-	private Object theObject;
+	private Object theObject;			//unsure if it's needed
 	
 	//Variables for sun related factors
 	private Double sunLengthOfDay;
@@ -38,22 +38,22 @@ public class ImpactFactor
 	private Date sunDate;
 	
 	//Variables and constants related to temperatures and building type
-	private double temperatureElasticity;
-	private double temperatureAverage;	//average temperature given in the forecasts
-	private double temperatureMin;		//min temperature given in the forecasts
-	private double temperatureMax;		//max temperature given in the forecasts 
-	private double temperatureDD;		//temperature degree days
-	private float temperatureHLC;		//temperature heat-loss coefficency
-	private double temperatureBase;		//desired temperature for object in this impact factor.
+	private Double temperatureElasticity;
+	private Double temperatureAverage;	//average temperature given in the forecasts
+	private Double temperatureMin;		//min temperature given in the forecasts
+	private Double temperatureMax;		//max temperature given in the forecasts 
+	private Double temperatureDD;		//temperature degree days
+	private Float temperatureHLC;		//temperature heat-loss coefficency
+	private Double temperatureBase;		//desired temperature for object in this impact factor.
 	private boolean temperatureHeat;	//TODO: implement
 	public static final double temperatureBaseResidential = 18.0;
 	public static final double temperatureBaseOffice = 15.0;
 	public static final double temperatureBaseIndustry = 15.0;
 	
-	private double weatherTemperature;
-	private double weatherWindSpeed;
-	private double weatherEffectiveTemperature;
-	private double weatherhPa;	
+	private Double weatherTemperature;
+	private Double weatherWindSpeed;
+	private Double weatherEffectiveTemperature;
+	private Double weatherhPa;	
 	// http://www.vesma.com/ddd/index.htm
 	
 	/**
@@ -352,6 +352,11 @@ public class ImpactFactor
 	// weather factor
 	//----------------------------
 	
+	public Double getEffectiveTemperature()
+	{
+		return weatherEffectiveTemperature;
+	}
+	
 	/**
 	 * Sets the effective temperature given temperature, humidity and windspeed in celcius, hPa and m/s
 	 * 
@@ -393,6 +398,29 @@ public class ImpactFactor
 		return temperatureHLC;
 	}
 	
+	public Double getTemperatureAverage()
+	{
+		if (temperatureAverage != null)
+			return temperatureAverage;
+		else 
+			return Double.NaN;
+	}
+	
+	public Double getTemperatureMax()
+	{
+		if (temperatureMax != null)
+			return temperatureMax;
+		else 
+			return Double.NaN;
+	}
+	
+	public Double getTemperatureMin()
+	{
+		if (temperatureMin != null)
+			return temperatureMin;
+		else 
+			return Double.NaN;
+	}
 	/**
 	 * Sets the heat-loss coefficency for a house or blockhouse with given
 	 * energy class. Will generate a random coefficency within the energy
@@ -497,7 +525,7 @@ public class ImpactFactor
 		{
 			if(min > base)
 			{
-				temperatureDD = 0;
+				temperatureDD = 0.0;
 			}
 			else if((min + max)/2 > base)
 			{
@@ -516,7 +544,7 @@ public class ImpactFactor
 		{
 			if(max < base)
 			{
-				temperatureDD = 0;
+				temperatureDD = 0.0;
 			}
 			else if((max + min)/2 < base)
 			{
