@@ -97,7 +97,7 @@ public class ImpactFactor
 		
 		try
 		{
-			String query = "";
+			String query = "SELECT * FROM Impact_Factor WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1,id);
 			ResultSet set = statement.executeQuery();
@@ -133,7 +133,7 @@ public class ImpactFactor
 		
 		try
 		{
-			String query = "";
+			String query = "SELECT * FROM Impact_Factor WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1,id);
 			ResultSet set = statement.executeQuery();
@@ -169,7 +169,7 @@ public class ImpactFactor
 		
 		try
 		{
-			String query = "";
+			String query = "SELECT * FROM Impact_Factor WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1,id);
 			ResultSet set = statement.executeQuery();
@@ -207,7 +207,7 @@ public class ImpactFactor
 		
 		try
 		{
-			String query = "";
+			String query = "SELECT * FROM Impact_Factor WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1,id);
 			ResultSet set = statement.executeQuery();
