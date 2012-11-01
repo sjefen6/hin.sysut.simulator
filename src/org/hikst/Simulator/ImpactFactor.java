@@ -83,6 +83,13 @@ public class ImpactFactor
 	
 	public static final int ENERGY_BUILDINGTYPE_HOUSE = 110;
 	public static final int ENERGY_BUILDINGTYPE_BLOCK = 111;
+	public static final int ENERGY_BUILDINGTYPE_OFFICE = 112;
+	public static final int ENERGY_BUILDINGTYPE_SCHOOL = 113;
+	public static final int ENERGY_BUILDINGTYPE_HOSPITAL = 114;
+	public static final int ENERGY_BUILDINGTYPE_INDUSTRY_OR_WORKSHOP = 115;
+	public static final int ENERGY_BUILDINGTYPE_HOTEL = 116;
+	public static final int ENERGY_BUILDINGTYPE_BUSINESS_WITH_FRIDGE_OR_HEATER_GROCERIES = 117;
+	public static final int ENERGY_BUILDINGTYPE_BUSINESS_WITHOUT_GROCERIES = 118;
 	
 	/**
 	 * Basic constructor for ImpactFactor, where only database id is given
@@ -433,7 +440,8 @@ public class ImpactFactor
 	{
 		float tempbh;
 		Random tempr = new Random();
-		if (btid == ENERGY_BUILDINGTYPE_HOUSE){
+		if (btid == ENERGY_BUILDINGTYPE_HOUSE)
+		{
 			switch(bhid)
 			{
 			case ENERGY_CLASS_A:
@@ -479,6 +487,58 @@ public class ImpactFactor
 				break;
 			case ENERGY_CLASS_F:
 				tempbh = (tempr.nextInt(69) + 220) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_SCHOOL)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.60f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(24) + 61) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(29) + 86) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(29) + 116) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(34) + 146) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(89) + 181) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_OFFICE)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.55f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(24) + 56) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(29) + 81) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(29) + 116) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(34) + 146) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(89) + 181) / 100.0f;
 				break;
 			default:
 				tempbh = Float.NaN;

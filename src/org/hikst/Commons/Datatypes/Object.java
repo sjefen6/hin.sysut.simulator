@@ -17,9 +17,9 @@ public class Object
 {
 	private int ID;
 	private String name;
-	private float effect;
-	private float voltage;
-	private float current;
+	private double effect;
+	private double voltage;
+	private double current;
 	private int impact_degree_ID;
 	private int usage_pattern_ID;
 	private double latitude;
@@ -44,15 +44,15 @@ public class Object
 		return name;
 	}
 
-	public float getEffect() {
+	public double getEffect() {
 		return effect;
 	}
 	
-	public float getVoltage(){
+	public double getVoltage(){
 		return voltage;
 	}
 	
-	public float getCurrent(){
+	public double getCurrent(){
 		return current;
 	}
 	
@@ -175,9 +175,9 @@ public class Object
 			{
 				this.ID = set.getInt(1);
 				this.name = set.getString(2);
-				this.effect = set.getFloat(3);
-				this.voltage = set.getFloat(4);
-				this.current = set.getFloat(5);
+				this.effect = set.getDouble(3);
+				this.voltage = set.getDouble(4);
+				this.current = set.getDouble(5);
 				this.impact_degree_ID = set.getInt(6);
 				this.usage_pattern_ID = set.getInt(7);
 				this.longitude = set.getDouble(8);
