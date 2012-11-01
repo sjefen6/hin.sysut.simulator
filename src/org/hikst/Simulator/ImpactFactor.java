@@ -594,7 +594,7 @@ public class ImpactFactor
 					}
 					else
 					{
-						
+						throw new TypeIdNotFoundException();
 					}
 				} 
 				catch (TypeIdNotFoundException e) 
@@ -621,11 +621,11 @@ public class ImpactFactor
 			{
 				e.printStackTrace();
 			} 
-			// Hvis currentTime ikke er definert:
-			catch (NullPointerException e)
-			{
-				e.printStackTrace();
-			}
+//			// Hvis currentTime ikke er definert:
+//			catch (NullPointerException e)
+//			{
+//				e.printStackTrace();
+//			}
 		}
 		
 		//TODO: Fix this parser
@@ -636,7 +636,6 @@ public class ImpactFactor
 				WeatherData tempWD = new WeatherData(new JSONObject(content));
 				
 				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
-				
 				
 				
 			} 
