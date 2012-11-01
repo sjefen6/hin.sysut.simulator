@@ -88,7 +88,7 @@ public class Simulation implements Runnable
 		}
 		
 			//the things that interacts on the simulation like the weather and so forth..
-			ArrayList<ImpactFactor> impactFactors = description.getImpactFactors();
+			ArrayList<ImpactFactor> impactFactor = description.getImpactFactors();
 		
 			Date startTime  = description.getTimeStart();
 			Date endTime = description.getTimeEnd();
@@ -140,6 +140,8 @@ public class Simulation implements Runnable
 				//If the object has a base area greater than zero and the inside temperature is higher than 
 				//the outside temperature, calculate the heating demand using the heating degree day formula
 				//before the usage pattern is applied.
+				
+				//Placeholder calculation for heating demand.
 //				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
 //				{					
 //					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/(hourlengthmillisecs/intervall);
