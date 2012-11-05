@@ -90,6 +90,11 @@ public class ImpactFactor
 	public static final int ENERGY_BUILDINGTYPE_HOTEL = 116;
 	public static final int ENERGY_BUILDINGTYPE_BUSINESS_WITH_FRIDGE_OR_HEATER_GROCERIES = 117;
 	public static final int ENERGY_BUILDINGTYPE_BUSINESS_WITHOUT_GROCERIES = 118;
+	public static final int ENERGY_BUILDINGTYPE_KINDERGARDEN = 119;
+	public static final int ENERGY_BUILDINGTYPE_NURSINGHOME = 120;
+	public static final int ENERGY_BUILDINGTYPE_RESTAURANT_BUILDING = 121;
+	public static final int ENERGY_BUILDINGTYPE_SPORTS_HALL = 122;
+	public static final int ENERGY_BUILDINGTYPE_CULTURAL = 123;
 	
 	/**
 	 * Basic constructor for ImpactFactor, where only database id is given
@@ -492,6 +497,32 @@ public class ImpactFactor
 				tempbh = Float.NaN;
 			}
 		}
+		else if (btid == ENERGY_BUILDINGTYPE_OFFICE)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.55f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(24) + 56) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(24) + 81) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(34) + 106) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(29) + 141) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(84) + 171) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
 		else if (btid == ENERGY_BUILDINGTYPE_SCHOOL)
 		{
 			switch(bhid)
@@ -518,7 +549,241 @@ public class ImpactFactor
 				tempbh = Float.NaN;
 			}
 		}
-		else if (btid == ENERGY_BUILDINGTYPE_OFFICE)
+		else if (btid == ENERGY_BUILDINGTYPE_HOSPITAL)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.85f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(14) + 86) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(69) + 101) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(19) + 171) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(19) + 191) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(99) + 211) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_INDUSTRY_OR_WORKSHOP)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.55f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(24) + 56) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(24) + 81) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(74) + 106) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(69) + 181) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(124) + 251) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_HOTEL)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.65f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(29) + 66) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(29) + 96) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(34) + 126) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(29) + 161) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(94) + 191) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_BUSINESS_WITH_FRIDGE_OR_HEATER_GROCERIES)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.90f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(39) + 91) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(44) + 131) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(89) + 176) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(89) + 266) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(174) + 356) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_BUSINESS_WITHOUT_GROCERIES)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.75f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 76) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(34) + 111) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(44) + 146) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(44) + 191) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(114) + 236) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_KINDERGARDEN)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.70f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 71) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(29) + 106) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(34) + 136) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(34) + 171) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(99) + 206) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_NURSINGHOME)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.80f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 81) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(39) + 116) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(24) + 156) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(24) + 181) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(99) + 206) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_RESTAURANT_BUILDING)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.65f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 66) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(29) + 101) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(29) + 131) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(24) + 161) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(89) + 186) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_SPORTS_HALL)
+		{
+			switch(bhid)
+			{
+			case ENERGY_CLASS_A:
+				tempbh = 0.80f;
+				break;
+			case ENERGY_CLASS_B:
+				tempbh = (tempr.nextInt(34) + 81) / 100.0f;
+				break;
+			case ENERGY_CLASS_C:
+				tempbh = (tempr.nextInt(39) + 116) / 100.0f;
+				break;
+			case ENERGY_CLASS_D:
+				tempbh = (tempr.nextInt(44) + 156) / 100.0f;
+				break;
+			case ENERGY_CLASS_E:
+				tempbh = (tempr.nextInt(49) + 201) / 100.0f;
+				break;
+			case ENERGY_CLASS_F:
+				tempbh = (tempr.nextInt(119) + 251) / 100.0f;
+				break;
+			default:
+				tempbh = Float.NaN;
+			}
+		}
+		else if (btid == ENERGY_BUILDINGTYPE_CULTURAL)
 		{
 			switch(bhid)
 			{
@@ -532,13 +797,13 @@ public class ImpactFactor
 				tempbh = (tempr.nextInt(29) + 81) / 100.0f;
 				break;
 			case ENERGY_CLASS_D:
-				tempbh = (tempr.nextInt(29) + 116) / 100.0f;
+				tempbh = (tempr.nextInt(19) + 111) / 100.0f;
 				break;
 			case ENERGY_CLASS_E:
-				tempbh = (tempr.nextInt(34) + 146) / 100.0f;
+				tempbh = (tempr.nextInt(14) + 131) / 100.0f;
 				break;
 			case ENERGY_CLASS_F:
-				tempbh = (tempr.nextInt(89) + 181) / 100.0f;
+				tempbh = (tempr.nextInt(74) + 146) / 100.0f;
 				break;
 			default:
 				tempbh = Float.NaN;
