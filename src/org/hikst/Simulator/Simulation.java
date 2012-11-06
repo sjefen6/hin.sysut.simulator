@@ -23,7 +23,7 @@ public class Simulation implements Runnable
 	private SimulationDescription description;
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
-	private ArrayList <ImpactFactor> impactFactor;
+	private ImpactFactor impactFactor;
 	private ArrayList <Factor> factors;
 	
 	/*

@@ -28,7 +28,7 @@ public class WeatherParser {
 		WeatherData data = null;
 		
 		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 			
 			String urlName = "http://www.yr.no/place/"+country+"/"+county+"/"+municipiality+"/"+city+"/forecast.xml";
 			System.out.println(urlName);

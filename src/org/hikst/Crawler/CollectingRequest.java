@@ -59,7 +59,7 @@ public class CollectingRequest implements Runnable
 		
 		try
 		{
-			String query = "SELECT ID, Type_ID, Latitude, Longitude, Time_From,Time_To, Status_ID WHERE ID=?";
+			String query = "SELECT ID, Type_ID, Latitude, Longitude, Time_From, Time_To, Status_ID FROM crawler_queue_objects WHERE ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, id);
 			ResultSet set = statement.executeQuery();
@@ -91,7 +91,7 @@ public class CollectingRequest implements Runnable
 			
 			int statusID = Status.getInstance().getStatusID(Request_Processing);
 			
-			String query = "UPDATE TABLE crawler_queue_bjects SET status_id=? WHERE id=?";
+			String query = "UPDATE TABLE crawler_queue_objects SET status_id=? WHERE id=?";
 			
 			PreparedStatement statement =  connection.prepareStatement(query);
 			statement.setInt(1, statusID);
