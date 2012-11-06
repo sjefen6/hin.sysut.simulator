@@ -20,7 +20,7 @@ public class Object
 	private double effect;
 	private double voltage;
 	private double current;
-	private int impact_degree_ID;
+	//private int impact_degree_ID;
 	private int usage_pattern_ID;
 	private double latitude;
 	private double longitude;
@@ -56,9 +56,9 @@ public class Object
 		return current;
 	}
 	
-	public int getImpact_degree_ID() {
-		return impact_degree_ID;
-	}
+//	public int getImpact_degree_ID() {
+//		return impact_degree_ID;
+//	}
 
 	public int getUsage_pattern_ID() {
 		return usage_pattern_ID;
@@ -128,7 +128,7 @@ public class Object
 			jsonObject.put("effect", effect);
 			jsonObject.put("voltage", voltage);
 			jsonObject.put("current", current);
-			jsonObject.put("impact_degree_ID", impact_degree_ID);
+			//jsonObject.put("impact_degree_ID", impact_degree_ID);
 			jsonObject.put("usage_pattern_ID", usage_pattern_ID);
 			jsonObject.put("latitude", latitude);
 			jsonObject.put("longitude", longitude);
@@ -167,8 +167,9 @@ public class Object
 		
 		try
 		{
-			String query = "SELECT * FROM Objects";
+			String query = "SELECT * FROM Objects where ID=?";
 			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
 			ResultSet set = statement.executeQuery();
 			
 			if(set.next())
@@ -178,14 +179,14 @@ public class Object
 				this.effect = set.getDouble(3);
 				this.voltage = set.getDouble(4);
 				this.current = set.getDouble(5);
-				this.impact_degree_ID = set.getInt(6);
-				this.usage_pattern_ID = set.getInt(7);
-				this.longitude = set.getDouble(8);
-				this.latitude = set.getDouble(9);
-				this.self_temperature = set.getDouble(10);
-				this.target_temperature = set.getDouble(11);
-				this.base_area = set.getDouble(12);
-				this.base_height = set.getDouble(13);
+				this.usage_pattern_ID = set.getInt(6);
+				this.longitude = set.getDouble(7);
+				this.latitude = set.getDouble(8);
+				this.self_temperature = set.getDouble(9);
+				this.target_temperature = set.getDouble(10);
+				this.base_area = set.getDouble(11);
+				this.base_height = set.getDouble(12);
+				this.heat_loss_rate = set.getDouble(13);
 				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);

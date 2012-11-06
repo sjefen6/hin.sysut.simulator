@@ -157,12 +157,28 @@ public class Simulation implements Runnable
 //					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/(hourlengthmillisecs/intervall);
 //				}
 				
+				System.out.println("Id: " + simulatorObject.getID());
+				System.out.println("Effect: "+effect);
+				System.out.println("Current: "+current);
+				System.out.println("Voltage: "+ voltage);
+				System.out.println("power_consumption: "+power_consumption);
+				System.out.println("latitude: "+latitude);
+				System.out.println("longitude: "+longitude);
+				System.out.println("self_temperature: "+self_temperature);
+				System.out.println("target_temperature: "+target_temperature);
+				System.out.println("base_area: "+base_area);
+				System.out.println("base_height: "+base_height);
+				System.out.println("heat_loss_rate: "+heat_loss_rate);				
+				
 				//Using the methods from ImpactFactor to calculate heating degree days and calculate heating demand.
 				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
 				{
 					for (Factor temp : factors)
 					{
 						tempHDD = temp.getTemperatureDD();
+						
+						System.out.println("CHECKING FACTORS, DEBUGGING!");
+						
 					}
 					effect = (base_area * heat_loss_rate * tempHDD)/(hourlengthmillisecs/intervall);
 				}
