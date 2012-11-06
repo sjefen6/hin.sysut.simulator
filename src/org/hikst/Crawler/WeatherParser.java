@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.hikst.Commons.Datatypes.Forecast;
 import org.hikst.Commons.Datatypes.WeatherData;
+import org.hikst.Commons.Services.Settings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,6 +30,7 @@ public class WeatherParser {
 	
 	public static WeatherData getWeatherData(String country,String county,String municipiality, String city)
 	{
+		Connection connectionDB = Settings.getDBC();
 		WeatherData data = null;
 		
 		try {
@@ -167,7 +173,10 @@ public class WeatherParser {
 			
 			
 			System.out.println(data);
+			System.out.println("-----------------------");
 			System.out.println(data.toJSONObject());
+			
+		
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -184,6 +193,8 @@ public class WeatherParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		
 		return data;
 	}
