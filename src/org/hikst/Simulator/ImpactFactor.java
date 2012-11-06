@@ -20,9 +20,9 @@ import org.hikst.Commons.Statics.*;
 
 public class ImpactFactor 
 {
-	public static final int IMPACT_SUN = 0;
-	public static final int IMPACT_TEMPERATURE = 1;
-	public static final int IMPACT_WEATHER = 2;
+	public static final int IMPACT_SUN = 2;
+	public static final int IMPACT_TEMPERATURE = 5;
+	public static final int IMPACT_WEATHER = 1;
 	public static final int IMPACT_BUILDING = 3;
 	
 	public static final String IMPACT_SUN_STRING = "IMPACT_SUN";

@@ -23,7 +23,7 @@ public class Simulation implements Runnable
 	private SimulationDescription description;
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
-	private ArrayList <ImpactFactor> impactFactor;
+	private ImpactFactor impactFactor;
 	private ArrayList <Factor> factors;
 	
 	/*
@@ -98,6 +98,7 @@ public class Simulation implements Runnable
 			for( Factor ifactor: description.getImpactFactors())
 			{
 				factors.add(ifactor);
+				System.out.println(ifactor.toString());
 			}
 		
 			Date startTime  = description.getTimeStart();
@@ -109,6 +110,9 @@ public class Simulation implements Runnable
 			
 			Date time = startTime;
 			
+			//ImpactDegrees impactDegree = new ImpactDegrees(simulatorObject.getID());		
+			
+			//TODO: Gjør denne noe?
 			if(simulatorObject.hasSons())
 			{	
 				System.out.println("Request \""+this.request.getID()+"\": is dependent of one or more simulation(s)");
@@ -165,6 +169,15 @@ public class Simulation implements Runnable
 				System.out.println("base_area: "+base_area);
 				System.out.println("base_height: "+base_height);
 				System.out.println("heat_loss_rate: "+heat_loss_rate);				
+				
+				//TODO:
+//				if(impactDegree != null)
+//				{
+//					System.out.println("Inside if(impactDegree!=null)");
+//
+//				}
+				
+				
 				
 				
 				//Placeholder calculation for heating demand.

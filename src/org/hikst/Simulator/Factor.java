@@ -37,6 +37,14 @@ public class Factor {
 		
 	}
 	
+	public String toString()
+	{
+		return typeId + ", " + currentTime + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
+		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", " + temperatureHLC
+		 + ", " + temperatureBase + ", " + temperatureHeat + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
+		 + ", " + weatherhPa;
+	}
+	
 	public Factor getFactor()
 	{
 		return this;

@@ -12,6 +12,9 @@ public class ImpactDegrees
 	float percent;
 	int type;
 	
+	//TODO: Fix class to also use impactFactor
+	
+	
 	public float getPercent() {
 		return percent;
 	}
@@ -41,7 +44,7 @@ public class ImpactDegrees
 		
 		try
 		{
-			String query = "SELECT Percent, Type_ID FROM Impact_Degrees WHERE ID = ?;";
+			String query = "SELECT Percent, Type_ID FROM Impact_Degrees WHERE object_id=?;";
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet set = statement.executeQuery();
 		
