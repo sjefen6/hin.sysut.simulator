@@ -11,9 +11,11 @@ import org.hikst.Commons.Datatypes.Object;
 import org.hikst.Commons.Datatypes.UsagePattern;
 import org.hikst.Commons.Exceptions.ObjectNotFoundException;
 import org.hikst.Commons.Exceptions.StatusIdNotFoundException;
+import org.hikst.Commons.Exceptions.TypeIdNotFoundException;
 import org.hikst.Commons.Exceptions.UsagePatternNotFoundException;
 import org.hikst.Commons.Services.Settings;
 import org.hikst.Commons.Statics.Status;
+import org.hikst.Commons.Statics.Type;
 
 public class Simulation implements Runnable
 {
@@ -22,16 +24,19 @@ public class Simulation implements Runnable
 	private SimulationDependency simulationDependency;
 	private CrawlerDependency crawlerDependency;
 	private ArrayList <ImpactFactor> impactFactor;
+	private ArrayList <Factor> factors;
 	
-	private final double hourlengthmillisecs = 3600000.0f; //Hour length is 3,6 million milliseconds. This is critical in order to properly
-														   //scale correct heating degree and heating requirement results when interval is
-														   //modified by the user.
+	/*
+	 * Hour length is 3,6 million milliseconds. This is critical in order to properly 
+	 * scale correct heating degree and heating requirement results when interval is
+	 * modified by the user.
+	 */		
+	private final double hourlengthmillisecs = 3600000.0f; 
 	
 	private double placeholderforoutsidetemp = 12.0f; //Placeholder for outside temperature to be aquired from weather data											 
 													  //in later versions.
 	private double tempHDD;										 
 	
-	//TODO: Fix comments
 	/***
 	 * @param request
 	 * 
@@ -40,6 +45,7 @@ public class Simulation implements Runnable
 	public Simulation(QueueObjects request)
 	{
 		this.request = request;
+		this.factors = new ArrayList<Factor>();
 		
 		try
 		{
@@ -80,7 +86,6 @@ public class Simulation implements Runnable
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					System.out.println("Request \""+this.request.getID()+"\": Unable to sleep");
 					e.printStackTrace();
 				}
@@ -88,7 +93,12 @@ public class Simulation implements Runnable
 		}
 		
 			//the things that interacts on the simulation like the weather and so forth..
-			ArrayList<ImpactFactor> impactFactor = description.getImpactFactors();
+			//ArrayList<ImpactFactor> impactFactor = description.getImpactFactors();
+			
+			for( Factor ifactor: description.getImpactFactors())
+			{
+				factors.add(ifactor);
+			}
 		
 			Date startTime  = description.getTimeStart();
 			Date endTime = description.getTimeEnd();
@@ -141,21 +151,45 @@ public class Simulation implements Runnable
 				//the outside temperature, calculate the heating demand using the heating degree day formula
 				//before the usage pattern is applied.
 				
-				//Placeholder calculation for heating demand.
-//				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
-//				{					
-//					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/(hourlengthmillisecs/intervall);
-//				}
+
 				
-				//Using the methods from ImpactFactor to calculate heating degree days and calculate heating demand.
+				System.out.println("Id: " + simulatorObject.getID());
+				System.out.println("Effect: "+effect);
+				System.out.println("Current: "+current);
+				System.out.println("Voltage: "+ voltage);
+				System.out.println("power_consumption: "+power_consumption);
+				System.out.println("latitude: "+latitude);
+				System.out.println("longitude: "+longitude);
+				System.out.println("self_temperature: "+self_temperature);
+				System.out.println("target_temperature: "+target_temperature);
+				System.out.println("base_area: "+base_area);
+				System.out.println("base_height: "+base_height);
+				System.out.println("heat_loss_rate: "+heat_loss_rate);				
+				
+				
+				//Placeholder calculation for heating demand.
 				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
-				{
-					for (ImpactFactor temp : impactFactor)
-					{
-					tempHDD = temp.getTemperatureDD();
-					}
-					effect = (base_area * heat_loss_rate * tempHDD)/(hourlengthmillisecs/intervall);
+				{					
+					effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))/(hourlengthmillisecs/intervall);
 				}
+				
+				//TODO: Fix to use ImpactFactor. 
+				//Using the methods from ImpactFactor to calculate heating degree days and calculate heating demand.
+//				if (base_area > 0 && target_temperature > placeholderforoutsidetemp)
+//				{
+//					System.out.println("BEFORE CHECKING FACTORS, DEBUGGING!");
+//					for (Factor temp : factors)
+//					{
+//						tempHDD = temp.getTemperatureDD();
+//						
+//						System.out.println("CHECKING FACTORS, DEBUGGING!");
+//						
+//					}
+//					effect = (base_area * heat_loss_rate * tempHDD)/(hourlengthmillisecs/intervall);
+//					System.out.println("Inside if effect: " + effect);
+//				}
+//				
+				
 				
 				try
 				{
@@ -197,6 +231,25 @@ public class Simulation implements Runnable
 			}
 	
 	}
+
+	
+	private double calculateEffect(ImpactFactor factor, ImpactDegrees degree, ImpactInfluence influence, Object object)
+	{
+//		try {
+//			if(factor.getTypeID() == Type.getInstance().getTypeID(factor.IMPACT_SUN_STRING))
+//			{
+//				
+//			}
+//		} catch (TypeIdNotFoundException e) {
+//			e.printStackTrace();
+//		}
+		
+		
+		
+		
+		return Double.NaN;
+	}
+	
 	
 	private UsagePattern getUsagePattern(int object_id)throws UsagePatternNotFoundException
 	{
@@ -337,7 +390,6 @@ public class Simulation implements Runnable
 		{
 			ex.printStackTrace();
 		} catch (StatusIdNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -388,7 +440,6 @@ public class Simulation implements Runnable
 			ex.printStackTrace();
 		} catch (StatusIdNotFoundException e) {
 			System.out.println("Request\""+this.request.getID()+"\": No status id to the status \""+QueueObjects.Request_Finished+"\" was found");
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -411,7 +462,6 @@ public class Simulation implements Runnable
 			statement.setInt(6,description_id);
 			statement.executeUpdate();	
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Request\""+this.request.getID()+"\": Unable to save result");
 			e.printStackTrace();
 		}
