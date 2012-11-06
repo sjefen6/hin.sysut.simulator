@@ -18,7 +18,7 @@ public class SimulationDescription
 	private float interval;
 	private Object simulatorObject;
 	private int ID;
-	private ArrayList<ImpactFactor> impactFactors = new ArrayList<ImpactFactor>();
+	private ArrayList<Factor> factors = new ArrayList<Factor>();
 	
 	/**
 	 * Returns the ID of this SimulationDescription
@@ -70,9 +70,9 @@ public class SimulationDescription
 	 * 
 	 * @return impactFactors
 	 */
-	public ArrayList<ImpactFactor> getImpactFactors()
+	public ArrayList<Factor> getImpactFactors()
 	{
-		return impactFactors;
+		return factors;
 	}
 	
 	/*public SimulationDescription(Date timeStart,Date timeEnd,float interval,SimulatorObject simulatorObject) {
@@ -116,8 +116,9 @@ public class SimulationDescription
 				while(anotherSet.next())
 				{
 					int impact_factor_id = anotherSet.getInt(1);
+					ImpactFactor temp = new ImpactFactor(impact_factor_id, this.simulatorObject.getTargetTemperature(), timeStart);
 					
-					this.impactFactors.add(new ImpactFactor(impact_factor_id, timeStart));
+					this.factors.add(temp.getTheFactor());
 				}
 			}
 			else
