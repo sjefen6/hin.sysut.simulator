@@ -8,9 +8,11 @@ import org.hikst.Commons.Datatypes.Object;
 public class Factor {
 
 	private int typeId;
-	private Date currentTime;
 	
-	private Object theObject;			
+	private Object theObject;	
+	
+	private double longitude, latitude;
+	private Date timeFrom, timeTo;
 	
 	//Variables for sun related factors
 	private Double sunLengthOfDay;
@@ -39,7 +41,7 @@ public class Factor {
 	
 	public String toString()
 	{
-		return typeId + ", " + currentTime + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
+		return typeId + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
 		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", " + temperatureHLC
 		 + ", " + temperatureBase + ", " + temperatureHeat + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
 		 + ", " + weatherhPa;
@@ -58,19 +60,43 @@ public class Factor {
 		return theObject;
 	}
 
-	public void setCurrentTime(Date currentTime) {
-		this.currentTime = currentTime;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
-	public Date getCurrentTime() {
-		return currentTime;
+	public double getLongitude() {
+		return longitude;
 	}
 
-	private void setTypeId(int typeId) {
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setTimeFrom(Date timeFrom) {
+		this.timeFrom = timeFrom;
+	}
+
+	public Date getTimeFrom() {
+		return timeFrom;
+	}
+
+	public void setTimeTo(Date timeTo) {
+		this.timeTo = timeTo;
+	}
+
+	public Date getTimeTo() {
+		return timeTo;
+	}
+
+	public void setTypeId(int typeId) {
 		this.typeId = typeId;
 	}
 
-	private int getTypeId() {
+	public int getTypeId() {
 		return typeId;
 	}
 

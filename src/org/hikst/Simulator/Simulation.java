@@ -110,8 +110,6 @@ public class Simulation implements Runnable
 			
 			Date time = startTime;
 			
-			//ImpactDegrees impactDegree = new ImpactDegrees(simulatorObject.getID());		
-			
 			//TODO: Gjør denne noe?
 			if(simulatorObject.hasSons())
 			{	
