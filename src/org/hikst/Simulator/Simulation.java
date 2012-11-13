@@ -110,7 +110,7 @@ public class Simulation implements Runnable
 			
 			Date time = startTime;
 			
-			//TODO: Gjør denne noe?
+			//TODO: Må skrives om. 
 			if(simulatorObject.hasSons())
 			{	
 				System.out.println("Request \""+this.request.getID()+"\": is dependent of one or more simulation(s)");
@@ -243,23 +243,71 @@ public class Simulation implements Runnable
 	
 	}
 
-	
-	private double calculateEffect(ImpactFactor factor, ImpactDegrees degree, ImpactInfluence influence, Object object)
+	public double calculateEffect(ImpactFactor factor, ImpactDegrees degree, Object object)
 	{
-//		try {
-//			if(factor.getTypeID() == Type.getInstance().getTypeID(factor.IMPACT_SUN_STRING))
+		Double theEffect = 0.0;
+		
+		if (object.hasSons())
+		{
+			for(Object son : object.getSons())
+			{
+				theEffect += calculateEffect(factor, degree, son);
+			}
+		}
+		Factor tempfactor = null;
+		
+		
+		//TODO: XP på hvordan dette skal gjøres.
+		for(Factor f : factors)
+		{
+			try {
+				if (f.getTypeId() == Type.getInstance().getTypeID("IMPACT_SUN"))
+				{
+					tempfactor = f;
+					break;
+				}
+			} catch (TypeIdNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (tempfactor != null)
+		{
+			
+		}
+		
+//		if (object.getBaseArea() > 0 && object.getTargetTemperature() > )
+//		{
+//			System.out.println("BEFORE CHECKING FACTORS, DEBUGGING!");
+//			for (Factor temp : factors)
 //			{
+//				tempHDD = temp.getTemperatureDD();
+//				
+//				System.out.println("CHECKING FACTORS, DEBUGGING!");
 //				
 //			}
-//		} catch (TypeIdNotFoundException e) {
-//			e.printStackTrace();
+//			effect = (base_area * heat_loss_rate * tempHDD)/(hourlengthmillisecs/intervall);
+//			System.out.println("Inside if effect: " + effect);
 //		}
-		
-		
 		
 		
 		return Double.NaN;
 	}
+	//TODO: If (!needed:) delete
+//	private double calculateEffect(ImpactFactor factor, ImpactDegrees degree, Object object, double currentEffect)
+//	{
+//		Double theEffect = currentEffect;
+//		
+//		if (object.hasSons())
+//		{
+//			for(Object son : object.getSons())
+//			{
+//				theEffect += calculateEffect(factor, degree, son, theEffect);
+//			}
+//		}
+//		
+//		return Double.NaN;
+//	}
 	
 	
 	private UsagePattern getUsagePattern(int object_id)throws UsagePatternNotFoundException
