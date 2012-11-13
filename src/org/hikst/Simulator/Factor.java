@@ -27,7 +27,6 @@ public class Factor {
 	private Double temperatureDD;		//temperature degree days
 	private Float temperatureHLC;		//temperature heat-loss coefficency
 	private Double temperatureBase;		//desired temperature for object in this impact factor.
-	private boolean temperatureHeat;	//TODO: implement
 	
 	private Double weatherTemperature;
 	private Double weatherWindSpeed;
@@ -43,7 +42,7 @@ public class Factor {
 	{
 		return typeId + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
 		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", " + temperatureHLC
-		 + ", " + temperatureBase + ", " + temperatureHeat + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
+		 + ", " + temperatureBase + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
 		 + ", " + weatherhPa;
 	}
 	
@@ -178,14 +177,6 @@ public class Factor {
 
 	public Double getTemperatureBase() {
 		return temperatureBase;
-	}
-
-	public void setTemperatureHeat(boolean temperatureHeat) {
-		this.temperatureHeat = temperatureHeat;
-	}
-
-	public boolean isTemperatureHeat() {
-		return temperatureHeat;
 	}
 
 	public void setWeatherTemperature(Double weatherTemperature) {

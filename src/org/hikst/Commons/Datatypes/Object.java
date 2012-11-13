@@ -111,6 +111,11 @@ public class Object
 		return sons;
 	}
 	
+	public ArrayList<ImpactDegrees> getImpactDegrees()
+	{
+		return theDegrees;
+	}
+	
 	public UsagePattern getUsagePattern()
 	{
 		return thePattern;

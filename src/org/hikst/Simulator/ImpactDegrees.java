@@ -13,8 +13,6 @@ public class ImpactDegrees
 	int type;
 	private Integer objectId;
 	
-	//TODO: Fix class to also use impactFactor	
-	
 	public float getPercent() {
 		return percent;
 	}
@@ -23,7 +21,7 @@ public class ImpactDegrees
 		this.percent = percent;
 	}
 	
-	public float getType() {
+	public int getType() {
 		return type;
 	}
 	

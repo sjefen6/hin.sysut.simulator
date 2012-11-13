@@ -35,6 +35,7 @@ public class ImpactFactor
 	public static final double temperatureBaseIndustry = 15.0;
 	
 	private ArrayList<Factor> theFactorList;
+	private Factor theFactor;
 	
 	private double longitude, latitude;
 	private Date timeFrom, timeTo;	
@@ -46,7 +47,7 @@ public class ImpactFactor
 	private Calendar calendar;
 	private Object theObject;			//unsure if it's needed
 	
-	private Factor theFactor;
+
 //	
 //	//Variables for sun related factors
 //	private Double sunLengthOfDay;
@@ -61,7 +62,6 @@ public class ImpactFactor
 //	private Double temperatureDD;		//temperature degree days
 //	private Float temperatureHLC;		//temperature heat-loss coefficency
 //	private Double temperatureBase;		//desired temperature for object in this impact factor.
-//	private boolean temperatureHeat;	//TODO: implement
 //
 //	
 //	private Double weatherTemperature;
