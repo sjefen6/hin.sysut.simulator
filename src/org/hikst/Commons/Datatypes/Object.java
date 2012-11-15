@@ -7,10 +7,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.hikst.Commons.Exceptions.ObjectNotFoundException;
+import org.hikst.Commons.Exceptions.UsagePatternNotFoundException;
 import org.hikst.Commons.JSON.JSONArray;
 import org.hikst.Commons.JSON.JSONException;
 import org.hikst.Commons.JSON.JSONObject;
 import org.hikst.Commons.Services.Settings;
+import org.hikst.Simulator.ImpactDegrees;
 
 //Objects used for simulations 
 public class Object 
@@ -21,7 +23,7 @@ public class Object
 	private double voltage;
 	private double current;
 	//private int impact_degree_ID;
-	private int usage_pattern_ID;
+	private Integer usage_pattern_ID;
 	private double latitude;
 	private double longitude;
 	private double self_temperature;
@@ -34,7 +36,9 @@ public class Object
 	private Integer energy_class_id;
 	private Integer bulding_type_id;
 	
-	private ArrayList<Integer> sons = new ArrayList<Integer>();
+	private ArrayList<Object> sons = new ArrayList<Object>();
+	private ArrayList<ImpactDegrees> theDegrees = new ArrayList<ImpactDegrees>();
+	private UsagePattern thePattern;
 	
 	public int getID() {
 		return ID;
@@ -102,9 +106,19 @@ public class Object
 		return bulding_type_id;
 	}
 	
-	public ArrayList<Integer> getSons()
+	public ArrayList<Object> getSons()
 	{
 		return sons;
+	}
+	
+	public ArrayList<ImpactDegrees> getImpactDegrees()
+	{
+		return theDegrees;
+	}
+	
+	public UsagePattern getUsagePattern()
+	{
+		return thePattern;
 	}
 	
 	public boolean hasSons()
@@ -160,7 +174,6 @@ public class Object
 		return jsonObject;
 	}
 	
-	
 	public Object(int id) throws ObjectNotFoundException
 	{
 		Connection connection = Settings.getDBC();
@@ -188,6 +201,17 @@ public class Object
 				this.base_height = set.getDouble(12);
 				this.heat_loss_rate = set.getDouble(13);
 				
+				if (this.usage_pattern_ID != null && this.usage_pattern_ID != 0)
+				{
+					try {
+						this.thePattern = new UsagePattern(this.usage_pattern_ID);
+					} catch (UsagePatternNotFoundException e) {
+						e.printStackTrace();
+						this.thePattern = null;
+					}
+				}
+				getImpactDegrees(this.ID);
+				
 				query = "SELECT Son_ID FROM Part_Objects WHERE Father_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(query);
 				anotherStatement.setInt(1, this.ID);
@@ -195,7 +219,7 @@ public class Object
 			
 				while(anotherSet.next())
 				{
-					sons.add(anotherSet.getInt(1));
+					sons.add(new Object(anotherSet.getInt(1)));
 				}
 			}
 			else
@@ -207,5 +231,27 @@ public class Object
 			ex.printStackTrace();
 			//throw new ObjectNotFoundException();
 		}
+	}
+	
+	private void getImpactDegrees(int id)
+	{
+		Connection connection = Settings.getDBC();
+		
+		
+		try {
+			String thequerry = "SELECT * from Impact_Degrees where object_id=?";
+			PreparedStatement theStatement = connection.prepareStatement(thequerry);
+			theStatement.setInt(1, this.ID);
+			ResultSet set = theStatement.executeQuery();
+			
+			while(set.next())
+			{
+				theDegrees.add(new ImpactDegrees(set.getInt(1), set.getFloat(2), set.getInt(3)));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

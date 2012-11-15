@@ -108,11 +108,13 @@ public class SimulationDescription
 				this.timeStart = new Date(set.getLong(4));
 				this.timeEnd = new Date(set.getLong(5));
 				
+				//TODO: Fix query to get correct impact factors.
 				String anotherQuery = "SELECT Impact_Factor_ID FROM Impact_Factors_In_Simulation WHERE Sim_Description_ID=?";
 				PreparedStatement anotherStatement = connection.prepareStatement(anotherQuery);
 				anotherStatement.setInt(1, this.ID);
 				ResultSet anotherSet = anotherStatement.executeQuery();
 				
+				//TODO: Må fikses til å rekursivt hente/lage faktorer til ALLE underobjekter.
 				while(anotherSet.next())
 				{
 					int impact_factor_id = anotherSet.getInt(1);
