@@ -113,6 +113,7 @@ public class SimulationDescription
 				anotherStatement.setInt(1, this.ID);
 				ResultSet anotherSet = anotherStatement.executeQuery();
 				
+				//TODO: Må fikses til å rekursivt hente/lage faktorer til ALLE underobjekter.
 				while(anotherSet.next())
 				{
 					int impact_factor_id = anotherSet.getInt(1);

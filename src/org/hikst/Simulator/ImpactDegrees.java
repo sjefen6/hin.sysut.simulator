@@ -11,9 +11,7 @@ public class ImpactDegrees
 {
 	float percent;
 	int type;
-	
-	//TODO: Fix class to also use impactFactor
-	
+	private Integer objectId;
 	
 	public float getPercent() {
 		return percent;
@@ -23,19 +21,25 @@ public class ImpactDegrees
 		this.percent = percent;
 	}
 	
-	public float getType() {
+	public int getType() {
 		return type;
 	}
+	
+	public int getObjectId()
+	{
+		return objectId;
+	}	
 	
 	public void setType(int type) {
 		this.type = type;
 	}
 	
 	
-	public ImpactDegrees(float percent, int type,String content) {
+	public ImpactDegrees (int type,float percent,int oid) {
 		super();
 		this.percent = percent;
 		this.type = type;
+		this.objectId = oid;
 	}
 	
 	public ImpactDegrees(int id)
@@ -44,15 +48,17 @@ public class ImpactDegrees
 		
 		try
 		{
-			String query = "SELECT Percent, Type_ID FROM Impact_Degrees WHERE object_id=?;";
+			String query = "SELECT * FROM Impact_Degrees WHERE object_id=?;";
 			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
 			ResultSet set = statement.executeQuery();
 		
 			if(set.next())
 			{
-				this.percent = set.getFloat(1);
-				this.type = set.getInt(2);
-			}
+				this.type = set.getInt(1);
+				this.percent = set.getFloat(2);
+				this.objectId = set.getInt(3);
+			}			
 		}
 		catch(SQLException ex)
 		{

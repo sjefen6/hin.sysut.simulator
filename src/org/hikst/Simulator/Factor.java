@@ -8,9 +8,11 @@ import org.hikst.Commons.Datatypes.Object;
 public class Factor {
 
 	private int typeId;
-	private Date currentTime;
 	
-	private Object theObject;			
+	private Object theObject;	
+	
+	private double longitude, latitude;
+	private Date timeFrom, timeTo;
 	
 	//Variables for sun related factors
 	private Double sunLengthOfDay;
@@ -23,9 +25,7 @@ public class Factor {
 	private Double temperatureMin;		//min temperature given in the forecasts
 	private Double temperatureMax;		//max temperature given in the forecasts 
 	private Double temperatureDD;		//temperature degree days
-	private Float temperatureHLC;		//temperature heat-loss coefficency
 	private Double temperatureBase;		//desired temperature for object in this impact factor.
-	private boolean temperatureHeat;	//TODO: implement
 	
 	private Double weatherTemperature;
 	private Double weatherWindSpeed;
@@ -39,9 +39,9 @@ public class Factor {
 	
 	public String toString()
 	{
-		return typeId + ", " + currentTime + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
-		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", " + temperatureHLC
-		 + ", " + temperatureBase + ", " + temperatureHeat + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
+		return typeId + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
+		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", "
+		 + temperatureBase + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
 		 + ", " + weatherhPa;
 	}
 	
@@ -58,19 +58,43 @@ public class Factor {
 		return theObject;
 	}
 
-	public void setCurrentTime(Date currentTime) {
-		this.currentTime = currentTime;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
-	public Date getCurrentTime() {
-		return currentTime;
+	public double getLongitude() {
+		return longitude;
 	}
 
-	private void setTypeId(int typeId) {
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setTimeFrom(Date timeFrom) {
+		this.timeFrom = timeFrom;
+	}
+
+	public Date getTimeFrom() {
+		return timeFrom;
+	}
+
+	public void setTimeTo(Date timeTo) {
+		this.timeTo = timeTo;
+	}
+
+	public Date getTimeTo() {
+		return timeTo;
+	}
+
+	public void setTypeId(int typeId) {
 		this.typeId = typeId;
 	}
 
-	private int getTypeId() {
+	public int getTypeId() {
 		return typeId;
 	}
 
@@ -138,28 +162,12 @@ public class Factor {
 		return temperatureDD;
 	}
 
-	public void setTemperatureHLC(Float temperatureHLC) {
-		this.temperatureHLC = temperatureHLC;
-	}
-
-	public Float getTemperatureHLC() {
-		return temperatureHLC;
-	}
-
 	public void setTemperatureBase(Double temperatureBase) {
 		this.temperatureBase = temperatureBase;
 	}
 
 	public Double getTemperatureBase() {
 		return temperatureBase;
-	}
-
-	public void setTemperatureHeat(boolean temperatureHeat) {
-		this.temperatureHeat = temperatureHeat;
-	}
-
-	public boolean isTemperatureHeat() {
-		return temperatureHeat;
 	}
 
 	public void setWeatherTemperature(Double weatherTemperature) {

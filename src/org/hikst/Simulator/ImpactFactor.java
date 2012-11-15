@@ -33,6 +33,12 @@ public class ImpactFactor
 	public static final double temperatureBaseResidential = 18.0;
 	public static final double temperatureBaseOffice = 15.0;
 	public static final double temperatureBaseIndustry = 15.0;
+	
+	private ArrayList<Factor> theFactorList;
+	private Factor theFactor;
+	
+	private double longitude, latitude;
+	private Date timeFrom, timeTo;	
 
 	private int type_id;
 	private String content;
@@ -41,7 +47,7 @@ public class ImpactFactor
 	private Calendar calendar;
 	private Object theObject;			//unsure if it's needed
 	
-	private Factor theFactor;
+
 //	
 //	//Variables for sun related factors
 //	private Double sunLengthOfDay;
@@ -56,7 +62,6 @@ public class ImpactFactor
 //	private Double temperatureDD;		//temperature degree days
 //	private Float temperatureHLC;		//temperature heat-loss coefficency
 //	private Double temperatureBase;		//desired temperature for object in this impact factor.
-//	private boolean temperatureHeat;	//TODO: implement
 //
 //	
 //	private Double weatherTemperature;
@@ -183,11 +188,11 @@ public class ImpactFactor
 	 * 	@param id The id in the database of which this impact factor is found
 	 * 	@param baseTemp The desired temperature given to the object that uses this impactfactor.
 	 */
-	public ImpactFactor(int id, double baseTemp)
+	public ImpactFactor(int id, Object object)
 	{
 		calendar = new GregorianCalendar();
 		theFactor = new Factor();
-		theFactor.setTemperatureBase(baseTemp);
+		theFactor.setTemperatureBase(object.getTargetTemperature());
 		
 		Connection connection = Settings.getDBC();
 		
@@ -250,6 +255,50 @@ public class ImpactFactor
 		{
 			ex.printStackTrace();
 		}
+	}
+	
+	public ImpactFactor(double longitude, double latitude, Date from, Date to, int type)
+	{
+		this.longitude = longitude;
+		this.latitude = latitude;
+		this.timeFrom = from;
+		this.timeTo = to;
+		this.type_id = type;
+		
+		Connection connection = Settings.getDBC();
+		
+		try
+		{
+			String query = "SELECT * FROM Impact_Factor WHERE Type_ID=?";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1,type_id);
+			ResultSet set = statement.executeQuery();
+			
+			ImpactParser parser = new ImpactParser();
+			
+			//TODO: Make hack to fix adding factors to theFactorList in given long/lat area.
+			while(set.next())
+			{
+				this.type_id = set.getInt(1);
+				this.content = set.getString(2);
+				
+				Factor tempFactor = new Factor();
+				
+				tempFactor = parser.parseScale(type_id, content);
+				
+				theFactorList.add(tempFactor);
+			}
+			
+			
+			
+			
+		}
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		
 	}
 	
 	public int getTypeID()
@@ -377,7 +426,7 @@ public class ImpactFactor
 	 * @param bhid Building class identifier
 	 * @param btid Building type identifier
 	 */
-	public float getTemperatureHeatLossCoefficency(int bhid, int btid)
+	public float setTemperatureHeatLossCoefficency(int bhid, int btid)
 	{
 		float tempbh;
 		Random tempr = new Random();
@@ -774,7 +823,7 @@ public class ImpactFactor
 	 * @parm max Maximum temperature for this day.
 	 * @parm heat True if user wants <b>heating</b> degree days, false if user wants <b>cooling</b> degree days.
 	 */
-	private double setTemperatureDegreeDays(double base, double min, double max, boolean heat)
+	public static double setTemperatureDegreeDays(double base, double min, double max, boolean heat)
 	{
 		if(heat)
 		{
@@ -828,26 +877,26 @@ public class ImpactFactor
 		 * @param type
 		 * @param content
 		 */
-		public void parseScale(int type, String content)
+		public Factor parseScale(int type, String content)
 		{
 
 				try 
 				{
 					if( type == Type.getInstance().getTypeID(IMPACT_WEATHER_STRING))
 					{
-						parseWeatherInformation(content);
+						return parseWeatherInformation(content);
 					}
 					else if( type == Type.getInstance().getTypeID(IMPACT_BUILDING_STRING))
 					{
-						parseHLCInformation(content);
+						return parseHLCInformation(content);
 					}
 					else if( type == Type.getInstance().getTypeID(IMPACT_TEMPERATURE_STRING))
 					{
-						parseTemperatureInformation(content);
+						return parseTemperatureInformation(content);
 					}
 					else if( type == Type.getInstance().getTypeID(IMPACT_SUN_STRING))
 					{
-						parseSunlightInformation(content);
+						return parseSunlightInformation(content);
 					}
 					else
 					{
@@ -858,10 +907,10 @@ public class ImpactFactor
 				{
 					e.printStackTrace();
 				}
-
+				return null;
 		}
 		
-		private void parseSunlightInformation(String content)
+		private Factor parseSunlightInformation(String content)
 		{
 			try 
 			{	
@@ -875,36 +924,39 @@ public class ImpactFactor
 				else
 					tempFactor.setSunLight(isSunlight(tempWD.getTimeSunrise(), tempWD.getTimeSunset()));
 				
-				tempFactor.setCurrentTime(currentTime);
 				
-				theFactor = tempFactor;
+				tempFactor.setLatitude(tempWD.getLatitude());
+				tempFactor.setLongitude(tempWD.getLongitude());
+				tempFactor.setTimeFrom(tempWD.getLastUpdate());
+				tempFactor.setTimeTo(tempWD.getNextUpdate());
+				
+				return tempFactor;
 			} 
 			catch (JSONException e) 
 			{
 				e.printStackTrace();
 			} 
+			return null;
 		}
 		
 		//TODO: Fix this parser
-		private void parseHLCInformation(String content)
+		private Factor parseHLCInformation(String content)
 		{
 			try 
 			{	
 				WeatherData tempWD = new WeatherData(new JSONObject(content));
 				Factor tempFactor = new Factor();
-				ArrayList<Forecast> tempCast = tempWD.getForecasts();	
-				
-				tempFactor.setCurrentTime(currentTime);
-				
+				ArrayList<Forecast> tempCast = tempWD.getForecasts();		
 				
 			} 
 			catch (JSONException e) 
 			{
 				e.printStackTrace();
 			}
+			return null;
 		}
 		
-		private void parseTemperatureInformation(String content)
+		private Factor parseTemperatureInformation(String content)
 		{
 			try 
 			{	
@@ -929,11 +981,15 @@ public class ImpactFactor
 				tempFactor.setTemperatureAverage(tempAverage / tempCast.size());
 				tempFactor.setTemperatureMax(tempMax);
 				tempFactor.setTemperatureMin(tempMin);
-				tempFactor.setCurrentTime(currentTime);
+				
+				tempFactor.setLatitude(tempWD.getLatitude());
+				tempFactor.setLongitude(tempWD.getLongitude());
+				tempFactor.setTimeFrom(tempWD.getLastUpdate());
+				tempFactor.setTimeTo(tempWD.getNextUpdate());
 				
 				//TODO: Fix the boolean input here to let the user specify if heating or cooling.
 				tempFactor.setTemperatureDD(setTemperatureDegreeDays(theFactor.getTemperatureBase(), tempMin, tempMax, true));
-				theFactor = tempFactor;
+				return tempFactor;
 			} 
 			catch (JSONException e) 
 			{
@@ -943,20 +999,19 @@ public class ImpactFactor
 			{
 				e.printStackTrace();
 			}
+			return null;
 		}
 		
 		/**
 		 * @param content
 		 */
-		private void parseWeatherInformation(String content)
+		private Factor parseWeatherInformation(String content)
 		{
 			try 
 			{	
 				WeatherData tempWD = new WeatherData(new JSONObject(content));
 				Factor tempFactor = new Factor();
 				ArrayList<Forecast> tempCast = tempWD.getForecasts();
-				
-				tempFactor.setCurrentTime(currentTime);
 				
 				double tempMax, tempMin, tempAverage = 0;
 				
@@ -981,9 +1036,14 @@ public class ImpactFactor
 					}
 				}
 				
+				tempFactor.setLatitude(tempWD.getLatitude());
+				tempFactor.setLongitude(tempWD.getLongitude());
+				tempFactor.setTimeFrom(tempWD.getLastUpdate());
+				tempFactor.setTimeTo(tempWD.getNextUpdate());
+				
 				tempFactor.setTemperatureAverage(tempAverage / tempCast.size());
 				
-				theFactor = tempFactor;		
+				return tempFactor;	
 			} 
 			catch (JSONException e) 
 			{
@@ -993,8 +1053,7 @@ public class ImpactFactor
 			{
 				e.printStackTrace();
 			}
-			
-		}
-		
+			return null;
+		}	
 	}
 }
