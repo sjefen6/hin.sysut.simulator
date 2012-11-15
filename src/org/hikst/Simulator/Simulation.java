@@ -179,11 +179,12 @@ public class Simulation implements Runnable {
 			// }
 
 			// Placeholder calculation for heating demand.
-			if (base_area > 0 && target_temperature > placeholderforoutsidetemp) 
-			{
-				effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))
-						/ (hourlengthmillisecs / intervall);
-			}
+//			if (base_area > 0 && target_temperature > placeholderforoutsidetemp) 
+//			{
+//				effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))
+//						/ (hourlengthmillisecs / intervall);
+//			}
+			effect = calculateEffect(simulatorObject, time);
 
 			// TODO: Fix to use ImpactFactor.
 			// Using the methods from ImpactFactor to calculate heating degree
@@ -251,20 +252,23 @@ public class Simulation implements Runnable {
 
 	}
 
-	public double calculateEffect(Object object) 
+	public double calculateEffect(Object object, Date time) 
 	{
 		Double theEffect = 0.0;
-
+		System.out.println(theEffect.toString());
 		if (object.hasSons()) 
 		{
 			for (Object son : object.getSons()) 
 			{
-				theEffect += calculateEffect(son);
+				theEffect += calculateEffect(son, time);
 			}
 		}
-		Factor tempfactor = null;
+		System.out.println(theEffect.toString());
+		
+		Factor tempFactor = null;
 		ImpactDegrees tempDegree = null;
 		double tempEffect = 0.0;
+		double tempLoopEffect = 0.0;
 
 		// TODO: XP på hvordan dette skal gjøres.
 		for (Factor f : theFactors) 
@@ -273,36 +277,49 @@ public class Simulation implements Runnable {
 			{
 				if (f.getTypeId() == Type.getInstance().getTypeID("IMPACT_SUN")) 
 				{
-					tempfactor = f;
+					tempFactor = f;
 					for (ImpactDegrees imd: object.getImpactDegrees())
 					{
 						if (imd.getType() == f.getTypeId())
 						{
 							tempDegree = imd;
+														
+							if (object.getUsagePattern() != null)
+								tempLoopEffect = object.getEffect()  *  (object.getUsagePattern().getUsage(time)/100);
+							break;
 						}
 					}
-					if (tempDegree == null)
-					{
-						break;
-					}
-					if(f.isSunLight())
-					{
-						
-					}
-					
 				} 
+				//TODO: Fix temperature calculation!!!!!!!!!!!!
 				else if (f.getTypeId() == Type.getInstance().getTypeID("IMPACT_TEMPERATURE")) 
 				{
-					tempfactor = f;
+					for (ImpactDegrees imd: object.getImpactDegrees())
+					{
+						if (imd.getType() == f.getTypeId())
+						{
+							tempLoopEffect = object.getHeatLossRate() * object.getBaseArea() *
+							ImpactFactor.setTemperatureDegreeDays(object.getTargetTemperature(), 
+																f.getTemperatureMin(), f.getTemperatureMax(), 
+																(object.getTargetTemperature() < f.getTemperatureMax()));
+							break;
+
+						}
+					}
 				}
 			} 
 			catch (TypeIdNotFoundException e) 
 			{
 				e.printStackTrace();
 			}
+			
+			tempEffect += tempLoopEffect;
+			tempLoopEffect = 0.0;
+			tempDegree = null;
+			tempFactor = null;
 		}
+		theEffect = tempEffect;
 
-		if (tempfactor != null) 
+		if (tempFactor != null) 
 		{
 
 		}
@@ -321,8 +338,9 @@ public class Simulation implements Runnable {
 		// tempHDD)/(hourlengthmillisecs/intervall);
 		// System.out.println("Inside if effect: " + effect);
 		// }
-
-		return Double.NaN;
+		System.out.println(theEffect.toString());
+		
+		return theEffect;
 	}
 
 	// TODO: If (!needed:) delete

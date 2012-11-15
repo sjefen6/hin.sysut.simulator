@@ -87,9 +87,6 @@ public class QueueObjects
 		}
 	}
 	
-	/**
-	 * TODO:
-	 */
 	public void setStatusToFinished()
 	{
 		try

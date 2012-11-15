@@ -25,7 +25,6 @@ public class Factor {
 	private Double temperatureMin;		//min temperature given in the forecasts
 	private Double temperatureMax;		//max temperature given in the forecasts 
 	private Double temperatureDD;		//temperature degree days
-	private Float temperatureHLC;		//temperature heat-loss coefficency
 	private Double temperatureBase;		//desired temperature for object in this impact factor.
 	
 	private Double weatherTemperature;
@@ -41,8 +40,8 @@ public class Factor {
 	public String toString()
 	{
 		return typeId + ", " + sunLengthOfDay + ", " + sunLight + ", " + sunDate + ", " + temperatureElasticity
-		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", " + temperatureHLC
-		 + ", " + temperatureBase + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
+		 + ", " + temperatureAverage + ", " + temperatureMin + ", " + temperatureMax + ", " + temperatureDD + ", "
+		 + temperatureBase + ", " + weatherTemperature + ", " + weatherWindSpeed + ", " + weatherEffectiveTemperature
 		 + ", " + weatherhPa;
 	}
 	
@@ -161,14 +160,6 @@ public class Factor {
 
 	public Double getTemperatureDD() {
 		return temperatureDD;
-	}
-
-	public void setTemperatureHLC(Float temperatureHLC) {
-		this.temperatureHLC = temperatureHLC;
-	}
-
-	public Float getTemperatureHLC() {
-		return temperatureHLC;
 	}
 
 	public void setTemperatureBase(Double temperatureBase) {

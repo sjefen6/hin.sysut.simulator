@@ -183,11 +183,11 @@ public class ImpactFactor
 	 * 	@param id The id in the database of which this impact factor is found
 	 * 	@param baseTemp The desired temperature given to the object that uses this impactfactor.
 	 */
-	public ImpactFactor(int id, double baseTemp)
+	public ImpactFactor(int id, Object object)
 	{
 		calendar = new GregorianCalendar();
 		theFactor = new Factor();
-		theFactor.setTemperatureBase(baseTemp);
+		theFactor.setTemperatureBase(object.getTargetTemperature());
 		
 		Connection connection = Settings.getDBC();
 		
@@ -421,7 +421,7 @@ public class ImpactFactor
 	 * @param bhid Building class identifier
 	 * @param btid Building type identifier
 	 */
-	public float getTemperatureHeatLossCoefficency(int bhid, int btid)
+	public float setTemperatureHeatLossCoefficency(int bhid, int btid)
 	{
 		float tempbh;
 		Random tempr = new Random();
@@ -558,7 +558,7 @@ public class ImpactFactor
 	 * @parm max Maximum temperature for this day.
 	 * @parm heat True if user wants <b>heating</b> degree days, false if user wants <b>cooling</b> degree days.
 	 */
-	private double setTemperatureDegreeDays(double base, double min, double max, boolean heat)
+	public static double setTemperatureDegreeDays(double base, double min, double max, boolean heat)
 	{
 		if(heat)
 		{
