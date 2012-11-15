@@ -23,7 +23,7 @@ public class Object
 	private double voltage;
 	private double current;
 	//private int impact_degree_ID;
-	private int usage_pattern_ID;
+	private Integer usage_pattern_ID;
 	private double latitude;
 	private double longitude;
 	private double self_temperature;
@@ -201,10 +201,14 @@ public class Object
 				this.base_height = set.getDouble(12);
 				this.heat_loss_rate = set.getDouble(13);
 				
-				try {
-					this.thePattern = new UsagePattern(this.usage_pattern_ID);
-				} catch (UsagePatternNotFoundException e) {
-					e.printStackTrace();
+				if (this.usage_pattern_ID != null && this.usage_pattern_ID != 0)
+				{
+					try {
+						this.thePattern = new UsagePattern(this.usage_pattern_ID);
+					} catch (UsagePatternNotFoundException e) {
+						e.printStackTrace();
+						this.thePattern = null;
+					}
 				}
 				getImpactDegrees(this.ID);
 				

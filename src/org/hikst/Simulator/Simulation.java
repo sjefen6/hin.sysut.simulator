@@ -114,27 +114,27 @@ public class Simulation implements Runnable {
 		
 		Date time = startTime;
 
-		// TODO: Må skrives om.
-		if (simulatorObject.hasSons()) 
-		{
-			System.out.println("Request \"" + this.request.getID()+ "\": is dependent of one or more simulation(s)");
-			System.out.println("Request\"" + this.request.getID() + "\": Begins Simulations..");
-			System.out.println("Request\"" + this.request.getID() + "\": Simulation object: " + simulatorObject);
-			
-			while (time.before(endTime)) 
-			{
-				// get the from the finished simulation from the sons and
-				// multiply them together
-
-				long longTime = time.getTime();
-				long newTime = longTime + intervall;
-				time = new Date(newTime);
-			}
-
-			System.out.println("Request\"" + this.request.getID() + "\": Simulations finished");
-		} 
-		else 
-		{
+//		// TODO: Må skrives om.
+//		if (simulatorObject.hasSons()) 
+//		{
+//			System.out.println("Request \"" + this.request.getID()+ "\": is dependent of one or more simulation(s)");
+//			System.out.println("Request\"" + this.request.getID() + "\": Begins Simulations..");
+//			System.out.println("Request\"" + this.request.getID() + "\": Simulation object: " + simulatorObject);
+//			
+//			while (time.before(endTime)) 
+//			{
+//				// get the from the finished simulation from the sons and
+//				// multiply them together
+//
+//				long longTime = time.getTime();
+//				long newTime = longTime + intervall;
+//				time = new Date(newTime);
+//			}
+//
+//			System.out.println("Request\"" + this.request.getID() + "\": Simulations finished");
+//		} 
+//		else 
+//		{
 			System.out.println("Request\"" + this.request.getID() + "\": Is not dependent of one or more simulation(s)");
 			System.out.println("Request\"" + this.request.getID() + "\": Begins Simulation..");
 
@@ -184,7 +184,7 @@ public class Simulation implements Runnable {
 //				effect = (base_area * (heat_loss_rate * (target_temperature - placeholderforoutsidetemp)))
 //						/ (hourlengthmillisecs / intervall);
 //			}
-			effect = calculateEffect(simulatorObject, time);
+			
 
 			// TODO: Fix to use ImpactFactor.
 			// Using the methods from ImpactFactor to calculate heating degree
@@ -206,25 +206,25 @@ public class Simulation implements Runnable {
 			// }
 			//
 
-			try 
-			{
-				usagePattern = getUsagePattern(simulatorObject.getID());
-			} 
-			catch (UsagePatternNotFoundException ex) 
-			{
-				System.out.println("Usage pattern for object with ID=\"" + simulatorObject.getID() + "\" could not be determined");
-				ex.printStackTrace();
-			}
+//			try 
+//			{
+//				//usagePattern = getUsagePattern(simulatorObject.getID());
+//			} 
+//			catch (UsagePatternNotFoundException ex) 
+//			{
+//				System.out.println("Usage pattern for object with ID=\"" + simulatorObject.getID() + "\" could not be determined");
+//				ex.printStackTrace();
+//			}
 
 			while (time.before(endTime)) 
 			{
-				int probability = usagePattern.getUsage(time);
+//				int probability = usagePattern.getUsage(time);
 
-				double simulatedEffect = (effect * (float) probability) / 100.0f;
-				double simulatedCurrent = (current * (float) probability) / 100.0f;
-				double simulatedVoltage = (voltage * (float) probability) / 100.0f;
-				double simulatedConsumption = (power_consumption * (float) probability) / 100.0f;
-
+				double simulatedEffect = calculateEffect(simulatorObject, time);
+				double simulatedCurrent = 0;
+				double simulatedVoltage = 0;
+				double simulatedConsumption = 0;
+				
 				System.out.println("Request\"" + this.request.getID()
 						+ "\": Time = \"" + time.toGMTString() + " Power = \""
 						+ simulatedEffect + " W\" Current = \""
@@ -248,14 +248,14 @@ public class Simulation implements Runnable {
 
 			System.out.println("Request\"" + this.request.getID() + "\": Simulations finished");
 			this.request.setStatusToFinished();
-		}
+		//}
 
 	}
 
 	public double calculateEffect(Object object, Date time) 
 	{
 		Double theEffect = 0.0;
-		System.out.println(theEffect.toString());
+		System.out.println("theEffect of " + object.getName() + ": " + theEffect.toString());
 		if (object.hasSons()) 
 		{
 			for (Object son : object.getSons()) 
@@ -263,11 +263,14 @@ public class Simulation implements Runnable {
 				theEffect += calculateEffect(son, time);
 			}
 		}
-		System.out.println(theEffect.toString());
+		System.out.println("After sons effect: " + theEffect.toString());
 		
 		Factor tempFactor = null;
 		ImpactDegrees tempDegree = null;
-		double tempEffect = 0.0;
+		Double tempEffect = object.getEffect();
+		if(tempEffect == Double.NaN)
+			tempEffect = 0.0;
+		
 		double tempLoopEffect = 0.0;
 
 		// TODO: XP på hvordan dette skal gjøres.
@@ -283,7 +286,9 @@ public class Simulation implements Runnable {
 						if (imd.getType() == f.getTypeId())
 						{
 							tempDegree = imd;
-														
+							
+							System.out.println("Sunfactor");
+							
 							if (object.getUsagePattern() != null)
 								tempLoopEffect = object.getEffect()  *  (object.getUsagePattern().getUsage(time)/100);
 							break;
@@ -297,6 +302,8 @@ public class Simulation implements Runnable {
 					{
 						if (imd.getType() == f.getTypeId())
 						{
+							System.out.println("Temperature");
+							
 							tempLoopEffect = object.getHeatLossRate() * object.getBaseArea() *
 							ImpactFactor.setTemperatureDegreeDays(object.getTargetTemperature(), 
 																f.getTemperatureMin(), f.getTemperatureMax(), 
@@ -311,13 +318,16 @@ public class Simulation implements Runnable {
 			{
 				e.printStackTrace();
 			}
-			
+			System.out.println("tempLoopEffect: " + tempLoopEffect);
 			tempEffect += tempLoopEffect;
 			tempLoopEffect = 0.0;
 			tempDegree = null;
 			tempFactor = null;
 		}
-		theEffect = tempEffect;
+		System.out.println("tempEffect: " + tempEffect.toString());
+		
+		if (tempEffect != null)
+			theEffect += tempEffect;
 
 		if (tempFactor != null) 
 		{
@@ -338,7 +348,7 @@ public class Simulation implements Runnable {
 		// tempHDD)/(hourlengthmillisecs/intervall);
 		// System.out.println("Inside if effect: " + effect);
 		// }
-		System.out.println(theEffect.toString());
+		System.out.println("Output effect " + object.getName() + ": " + theEffect.toString());
 		
 		return theEffect;
 	}
@@ -360,29 +370,29 @@ public class Simulation implements Runnable {
 	// return Double.NaN;
 	// }
 
-	private UsagePattern getUsagePattern(int object_id)	throws UsagePatternNotFoundException 
-	{
-		UsagePattern pattern = null;
-
-		try 
-		{
-			int usage_pattern_id = getUsagePatternID(object_id);
-			pattern = new UsagePattern(usage_pattern_id);
-		} 
-		catch (UsagePatternNotFoundException ex) 
-		{
-			if (hasParent(object_id)) 
-			{
-				pattern = getUsagePattern(getParentID(object_id));
-			} 
-			else 
-			{
-				throw new UsagePatternNotFoundException();
-			}
-		}
-
-		return pattern;
-	}
+//	private UsagePattern getUsagePattern(int object_id)	throws UsagePatternNotFoundException 
+//	{
+//		UsagePattern pattern = null;
+//
+//		try 
+//		{
+//			int usage_pattern_id = getUsagePatternID(object_id);
+//			pattern = new UsagePattern(usage_pattern_id);
+//		} 
+//		catch (UsagePatternNotFoundException ex) 
+//		{
+//			if (hasParent(object_id)) 
+//			{
+//				pattern = getUsagePattern(getParentID(object_id));
+//			} 
+//			else 
+//			{
+//				throw new UsagePatternNotFoundException();
+//			}
+//		}
+//
+//		return pattern;
+//	}
 
 	//TODO: method needed?
 	private ArrayList<ImpactDegrees> getImpactDegrees(Object object)
@@ -405,25 +415,25 @@ public class Simulation implements Runnable {
 		return tempDegrees;
 	}
 	
-	private boolean hasParent(int object_id) 
-	{
-		try 
-		{
-			Connection connection = Settings.getDBC();
-
-			String query = "SELECT Father_ID from PartObjects WHERE Son_ID=?";
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setInt(1, object_id);
-			ResultSet set = statement.executeQuery();
-
-			return set.next();
-		} 
-		catch (SQLException ex) 
-		{
-			ex.printStackTrace();
-			return false;
-		}
-	}
+//	private boolean hasParent(int object_id) 
+//	{
+//		try 
+//		{
+//			Connection connection = Settings.getDBC();
+//
+//			String query = "SELECT Father_ID from Part_Objects WHERE Son_ID=?";
+//			PreparedStatement statement = connection.prepareStatement(query);
+//			statement.setInt(1, object_id);
+//			ResultSet set = statement.executeQuery();
+//
+//			return set.next();
+//		} 
+//		catch (SQLException ex) 
+//		{
+//			ex.printStackTrace();
+//			return false;
+//		}
+//	}
 
 	private int getParentID(int object_id) 
 	{
