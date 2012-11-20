@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import org.hikst.Commons.Datatypes.Object;
 
 import org.hikst.Commons.Services.Settings;
 
@@ -66,5 +68,38 @@ public class ImpactDegrees
 		}
 	}
 	
+	public ArrayList<ImpactFactor> getFactors(int latitude, int longitude, int time_from, int time_to){
+		Connection connection = Settings.getDBC();
+		
+		ArrayList<ImpactFactor> factors = new ArrayList<ImpactFactor> ();
+		
+		try {
+			String query = "SELECT * FROM Impact_Factors WHERE latitude >= ?"
+					+ "AND latitude <= ?" + "AND longitude >= ?"
+					+ "AND longitude <= ?" + "AND Time_From <= ?"
+					+ "AND Time_To >= ? AND Type_ID = ?";
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, (int) latitude - 1000);
+			statement.setInt(2, (int) latitude + 1000);
+			statement.setInt(3, (int) longitude - 1000);
+			statement.setInt(4, (int) longitude + 1000);
+			statement.setInt(5, (int) time_to);
+			statement.setInt(6, (int) time_from);
+			statement.setInt(7, type);
+			ResultSet set = statement.executeQuery();
+			
+			while (set.next()){
+				Factor f = new Factor();
+				
+				
+				factors.add(new ImpactFactor(set.getInt("id")));
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		return factors;
+	}
 
 }
